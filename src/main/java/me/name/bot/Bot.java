@@ -9,13 +9,14 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
+import me.name.RedditComments;
 
 
 public class Bot extends ListenerAdapter
 {
     public static void main(String[] args) throws LoginException
     {
-        JDA api = new JDABuilder("NjUyNTY0MjQ0MDY3Mzg1MzQ1.XhC_EA.vXUV-kUMX3MpbX4qzQnxYLcyd2s").addEventListeners(new Bot()).build();
+        JDA api = new JDABuilder("NjUyNTY0MjQ0MDY3Mzg1MzQ1.XhDrWw.gwimOIh66mXl5nZv5hRoTAMJWHA").addEventListeners(new Bot()).build();
     }
 
     @Override
@@ -26,11 +27,20 @@ public class Bot extends ListenerAdapter
 
         Message message = event.getMessage();
         String content = message.getContentRaw();
+        String[] args = content.split(" ");
+        MessageChannel channel = event.getChannel();
 
-        if (content.equals("%ping"))
+
+        if (args[0].equals(">comment"))
         {
-            MessageChannel channel = event.getChannel();
-            channel.sendMessage("Pong!").queue();
+            RedditComments reddit = new RedditComments();
+            String reddit_message = reddit.findComment(args[1]);
+            channel.sendMessage(reddit_message).queue();
+        }
+
+        else if (args[0].equals(">help"))
+        {
+            channel.sendMessage(">comment [subreddit name] \n Displays newest comment from that subreddit").queue();
         }
 
     }

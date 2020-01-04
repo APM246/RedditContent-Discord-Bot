@@ -1,3 +1,5 @@
+package me.name;
+
 import net.dean.jraw.*;
 import net.dean.jraw.http.NetworkAdapter;
 import net.dean.jraw.http.OkHttpNetworkAdapter;
@@ -12,14 +14,14 @@ import net.dean.jraw.references.SubredditReference;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Main
+public class RedditComments
 {
     private UserAgent userAgent;
     private Credentials credentials;
     private NetworkAdapter adapter;
     private RedditClient reddit;
 
-    public Main()
+    public RedditComments()
     {
         userAgent = new UserAgent("desktop", "net.dean.awesomescript", "v0.1", "APM369");
         credentials = Credentials.script("APM369", "lordarun", "VBouI4DFgiC2Mw", "5OzSdoDKXPSw2K1F2x95zSWNg84");
@@ -41,22 +43,25 @@ public class Main
         return images;
     }
 
-    public void findComment(String subredditName)
+    public String findComment(String subredditName)
     {
         SubredditReference subreddit = reddit.subreddit(subredditName);
         BarebonesPaginator.Builder<Comment> comments = subreddit.comments();
         BarebonesPaginator<Comment> built = comments.build();
-        
-        for (Comment comment: built.accumulateMerged(1))
+        List<Comment> commentslist = built.accumulateMerged(1);
+
+        return commentslist.get(0).getBody();
+
+        /*for (Comment comment: built.accumulateMerged(1))
         {
             System.out.println(comment.getBody());
-        }
+        }*/
     }
 
     public static void main(String[] args)
     {
-        Main main = new Main();
+        RedditComments main = new RedditComments();
         //System.out.println(main.getPhotoLink("EarthPorn"));
-        main.findComment("pcmasterrace");
+        System.out.println(main.findComment("pcmasterrace"));
     }
 }
