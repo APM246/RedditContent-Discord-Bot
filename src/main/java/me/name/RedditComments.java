@@ -29,18 +29,24 @@ public class RedditComments
         reddit = OAuthHelper.automatic(adapter, credentials);
     }
 
-    public List<String> getPhotoLink(String subredditName)
+    public String getPhotoLink(String subredditName)
     {
         DefaultPaginator<Submission> earthPorn = reddit.subreddit(subredditName).posts().build();
 
         List<String> images = new ArrayList<String>();
         for (Submission s : earthPorn.next()) {
-            if (!s.isSelfPost() && s.getUrl().contains("i.imgur.com")) {
+            if (!s.isSelfPost() && s.getUrl().contains("i.imgur.com"))
+            {
+                images.add(s.getUrl());
+            }
+            else if (!s.isSelfPost() && s.getUrl().contains("i.redd.it"))
+            {
                 images.add(s.getUrl());
             }
         }
 
-        return images;
+        int random_number = (int) (25*Math.random());
+        return images.get(random_number);
     }
 
     public String findComment(String subredditName)
@@ -61,7 +67,7 @@ public class RedditComments
     public static void main(String[] args)
     {
         RedditComments main = new RedditComments();
-        //System.out.println(main.getPhotoLink("EarthPorn"));
-        System.out.println(main.findComment("pcmasterrace"));
+        //System.out.println(main.findComment("pcmasterrace"));
+        System.out.println(main.getPhotoLink("CarPorn"));
     }
 }
