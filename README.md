@@ -1,4 +1,4 @@
-# RedditComments-Discord-Bot
+# RedditContent-Discord-Bot
 A Discord bot that displays various Reddit content from requested subreddits.
 
 Two commands at the moment: 
