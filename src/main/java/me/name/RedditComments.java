@@ -52,18 +52,16 @@ public class RedditComments
     public String getGIFLink(String subredditname)
     {
         DefaultPaginator<Submission> posts = reddit.subreddit(subredditname).posts().build();
-
         List<String> images = new ArrayList<String>();
-        for (Submission s : posts.next()) {
-            if (!s.isSelfPost() && s.getUrl().contains(".gifv"))
-            {
-                images.add(s.getUrl());
-            }
-        }
 
-        int random_number = (int) (images.size()*Math.random());
-        return images.get(random_number);
+        int random_number = (int) (Math.random()*posts.next().size());
+        if (random_number < 2) random_number += 2;
+        Submission s = posts.next().get(random_number);
+        //EmbeddedMedia em = s.getEmbeddedMedia();
+
+        return s.getUrl();
     }
+
 
     public String findComment(String subredditName)
     {
