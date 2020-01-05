@@ -1,5 +1,6 @@
 package me.name.bot;
 
+import me.name.ConfigReader;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.JDA;
@@ -15,9 +16,9 @@ import me.name.RedditComments;
 
 public class Bot extends ListenerAdapter
 {
-    public static void main(String[] args) throws LoginException
+    public static void main(String[] args) throws Exception
     {
-        JDA api = new JDABuilder("NjUyNTY0MjQ0MDY3Mzg1MzQ1.XhFuPw.gO6pEDK0EnT214I5fpVBvUM720I").addEventListeners(new Bot()).
+        JDA api = new JDABuilder(ConfigReader.retrieveBotToken()).addEventListeners(new Bot()).
                 setActivity(Activity.playing("type >help")).build();
     }
 
@@ -35,7 +36,7 @@ public class Bot extends ListenerAdapter
 
         if (args[0].equals(">help"))
         {
-            channel.sendMessage(">comment [subreddit name] \n Displays newest comment from that subreddit\n \n>photo [subreddit name]\n Displays a photo from that subreddit").queue();
+            channel.sendMessage(">comment [subreddit name] \n Displays newest comment from that subreddit\n \n>photo [subreddit name] \n Displays a random photo from that subreddit\n \n>gif [subreddit name]\n Displays a random gif from that subreddit").queue();
         }
 
         else
@@ -54,11 +55,24 @@ public class Bot extends ListenerAdapter
                     String url = reddit.getPhotoLink(args[1]);
                     channel.sendMessage(url).queue();
                 }
+
+                else if (args[0].equals(">gif"))
+                {
+                    String url = reddit.getGIFLink(args[1]);
+                    channel.sendMessage(url).queue();
+                }
             }
 
             catch (IndexOutOfBoundsException e)
             {
-                channel.sendMessage("No such subreddit exists buddy").queue();
+                String[] error_messages = {"No such subreddit exists buddy", "That subreddit doesn't exist...", "You spelt it wrong idiot", "Do you know how to use a keyboard?"};
+                int random_number = (int) (Math.random()*error_messages.length);
+                channel.sendMessage(error_messages[random_number]).queue();
+            }
+
+            catch (Exception e)
+            {
+                channel.sendMessage("Something went wrong  :'(").queue();
             }
         }
     }

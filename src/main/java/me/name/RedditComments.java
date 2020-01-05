@@ -31,10 +31,10 @@ public class RedditComments
 
     public String getPhotoLink(String subredditName)
     {
-        DefaultPaginator<Submission> earthPorn = reddit.subreddit(subredditName).posts().build();
+        DefaultPaginator<Submission> posts = reddit.subreddit(subredditName).posts().build();
 
         List<String> images = new ArrayList<String>();
-        for (Submission s : earthPorn.next()) {
+        for (Submission s : posts.next()) {
             if (!s.isSelfPost() && s.getUrl().contains("i.imgur.com"))
             {
                 images.add(s.getUrl());
@@ -45,7 +45,23 @@ public class RedditComments
             }
         }
 
-        int random_number = (int) (25*Math.random());
+        int random_number = (int) (images.size()*Math.random());
+        return images.get(random_number);
+    }
+
+    public String getGIFLink(String subredditname)
+    {
+        DefaultPaginator<Submission> posts = reddit.subreddit(subredditname).posts().build();
+
+        List<String> images = new ArrayList<String>();
+        for (Submission s : posts.next()) {
+            if (!s.isSelfPost() && s.getUrl().contains(".gifv"))
+            {
+                images.add(s.getUrl());
+            }
+        }
+
+        int random_number = (int) (images.size()*Math.random());
         return images.get(random_number);
     }
 
@@ -68,6 +84,7 @@ public class RedditComments
     {
         RedditComments main = new RedditComments();
         //System.out.println(main.findComment("pcmasterrace"));
-        System.out.println(main.getPhotoLink("CarPorn"));
+        //System.out.println(main.getPhotoLink("CarPorn"));
+        System.out.println(main.getGIFLink("gifs"));
     }
 }
