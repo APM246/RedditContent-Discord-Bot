@@ -9,4 +9,6 @@ Two commands at the moment:
 
 \>photo \[subreddit name]
 
+\>gif \[subreddit name]
+
 Will add more functionality
