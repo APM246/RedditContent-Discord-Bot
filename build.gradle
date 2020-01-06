@@ -1,6 +1,7 @@
 plugins {
     id'application'
     id'com.github.johnrengelman.shadow' version '4.0.4'
+    id'java'
 }
 
 mainClassName = 'me.name.bot.Bot'
@@ -20,3 +21,9 @@ dependencies {
 }
 
 compileJava.options.encoding = 'UTF-8'
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'me.name.bot.Bot'
+    }
+}
