@@ -60,3 +60,4 @@ gradlew.bat
 *.txt
 bot_token.config
 success.png
+launch.bat
