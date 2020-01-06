@@ -11,4 +11,6 @@ Commands at the moment:
 
 \>gif \[subreddit name]
 
+\>joke
+
 Will add more functionality

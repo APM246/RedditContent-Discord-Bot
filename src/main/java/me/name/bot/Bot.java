@@ -1,6 +1,7 @@
 package me.name.bot;
 
 import me.name.ConfigReader;
+import me.name.DadJokes;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.JDA;
@@ -36,7 +37,9 @@ public class Bot extends ListenerAdapter
 
         if (args[0].equals(">help"))
         {
-            channel.sendMessage(">comment [subreddit name] \n Displays newest comment from that subreddit\n \n>photo [subreddit name] \n Displays a random photo from that subreddit\n \n>gif [subreddit name]\n Displays a random gif from that subreddit").queue();
+            channel.sendMessage(">comment [subreddit name] \n Displays newest comment from that subreddit\n \n>photo [subreddit name] \n " +
+                                        "Displays a random photo from that subreddit\n \n>gif [subreddit name]\n Displays a random gif from that subreddit " +
+                                        "\n\n>joke \n Generates a random Dad Joke").queue();
         }
 
         else
@@ -60,6 +63,12 @@ public class Bot extends ListenerAdapter
                 {
                     String url = reddit.getGIFLink(args[1]);
                     channel.sendMessage(url).queue();
+                }
+
+                else if (args[0].equals(">joke"))
+                {
+                    String joke = DadJokes.generateDadJoke();
+                    channel.sendMessage(joke).queue();
                 }
             }
 
