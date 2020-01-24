@@ -2,6 +2,7 @@ package me.name.bot;
 
 import me.name.ConfigReader;
 import me.name.DadJokes;
+import me.name.NewsUpdates;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.JDA;
@@ -13,6 +14,8 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
 import me.name.RedditComments;
+
+import java.nio.channels.NonWritableChannelException;
 
 
 public class Bot extends ListenerAdapter
@@ -39,7 +42,8 @@ public class Bot extends ListenerAdapter
         {
             channel.sendMessage(">comment [subreddit name] \n Displays newest comment from that subreddit\n \n>photo [subreddit name] \n " +
                                         "Displays a random photo from that subreddit\n \n>gif [subreddit name]\n Displays a random gif from that subreddit " +
-                                        "\n\n>joke \n Generates a random Dad Joke").queue();
+                                        "\n\n>joke \n Generates a random Dad Joke " + "\n\n>news \n Gets latest news headline from New York Times "
+                                        + "\n\n>about \n Link to Github repository ").queue();
         }
 
         else
@@ -69,6 +73,18 @@ public class Bot extends ListenerAdapter
                 {
                     String joke = DadJokes.generateDadJoke();
                     channel.sendMessage(joke).queue();
+                }
+
+                else if (args[0].equals(">news"))
+                {
+                    String url = new NewsUpdates().retrieveURL();
+                    channel.sendMessage(url).queue();
+                }
+
+                else if (args[0].equals(">about"))
+                {
+                    String url = "https://github.com/APM246/RedditContent-Discord-Bot";
+                    channel.sendMessage(url).queue();
                 }
             }
 

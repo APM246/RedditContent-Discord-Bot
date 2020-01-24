@@ -18,6 +18,7 @@ repositories {
 dependencies {
     compile "net.dv8tion:JDA:4.1.0_95"
     compile "net.dean.jraw:JRAW:1.0.0"
+    compile fileTree(include: ['*.jar'], dir: 'libs')
 }
 
 compileJava.options.encoding = 'UTF-8'

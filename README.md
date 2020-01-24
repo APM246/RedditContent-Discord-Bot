@@ -13,6 +13,10 @@ Commands at the moment:
 
 \>joke
 
+\>news
+
+\>about
+
 Will add more functionality
 
 ## Hosting
