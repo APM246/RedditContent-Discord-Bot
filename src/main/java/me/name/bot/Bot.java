@@ -5,24 +5,20 @@ import me.name.DadJokes;
 import me.name.NewsUpdates;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.annotation.Nonnull;
-import javax.security.auth.login.LoginException;
 import me.name.RedditComments;
-
-import java.nio.channels.NonWritableChannelException;
 
 
 public class Bot extends ListenerAdapter
 {
     public static void main(String[] args) throws Exception
     {
-        JDA api = new JDABuilder(ConfigReader.retrieveBotToken()).addEventListeners(new Bot()).
+        new JDABuilder(ConfigReader.retrieveBotToken()).addEventListeners(new Bot()).
                 setActivity(Activity.playing("type >help")).build();
     }
 
@@ -40,10 +36,11 @@ public class Bot extends ListenerAdapter
 
         if (args[0].equals(">help"))
         {
-            channel.sendMessage(">comment [subreddit name] \n Displays newest comment from that subreddit\n \n>photo [subreddit name] \n " +
+            channel.sendMessage("```css\n" +
+                                        ">comment [subreddit name] \n Displays newest comment from that subreddit\n \n>photo [subreddit name] \n " +
                                         "Displays a random photo from that subreddit\n \n>gif [subreddit name]\n Displays a random gif from that subreddit " +
                                         "\n\n>joke \n Generates a random Dad Joke " + "\n\n>news \n Gets latest news headline from New York Times "
-                                        + "\n\n>about \n Link to Github repository ").queue();
+                                        + "\n\n>about \n Link to Github repository " + "\n```").queue();
         }
 
         else
@@ -51,6 +48,7 @@ public class Bot extends ListenerAdapter
             try
             {
                 RedditComments reddit = new RedditComments();
+                NewsUpdates newsUpdates = new NewsUpdates();
 
                 if (args[0].equals(">comment"))
                 {
@@ -77,7 +75,13 @@ public class Bot extends ListenerAdapter
 
                 else if (args[0].equals(">news"))
                 {
-                    String url = new NewsUpdates().retrieveURL();
+                    String url = newsUpdates.retrieveURL(true);
+                    channel.sendMessage(url).queue();
+                }
+
+                else if (args[0].equals(">news top"))
+                {
+                    String url = newsUpdates.retrieveURL(false);
                     channel.sendMessage(url).queue();
                 }
 
@@ -97,6 +101,7 @@ public class Bot extends ListenerAdapter
 
             catch (Exception e)
             {
+                e.printStackTrace();
                 channel.sendMessage("Something went wrong  :'(").queue();
             }
         }

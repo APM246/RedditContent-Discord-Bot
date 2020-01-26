@@ -34,7 +34,8 @@ public class RedditComments
         DefaultPaginator<Submission> posts = reddit.subreddit(subredditName).posts().build();
 
         List<String> images = new ArrayList<String>();
-        for (Submission s : posts.next()) {
+        Listing<Submission> photo_list = posts.next();
+        for (Submission s : photo_list) {
             if (!s.isSelfPost() && s.getUrl().contains("i.imgur.com"))
             {
                 images.add(s.getUrl());
@@ -45,6 +46,7 @@ public class RedditComments
             }
         }
 
+        if (images.size() == 0) return "This subreddit does not contain image-based posts";
         int random_number = (int) (images.size()*Math.random());
         return images.get(random_number);
     }
@@ -52,14 +54,25 @@ public class RedditComments
     public String getGIFLink(String subredditname)
     {
         DefaultPaginator<Submission> posts = reddit.subreddit(subredditname).posts().build();
-        List<String> images = new ArrayList<String>();
 
-        int random_number = (int) (Math.random()*posts.next().size());
-        if (random_number < 2) random_number += 2;
-        Submission s = posts.next().get(random_number);
-        //EmbeddedMedia em = s.getEmbeddedMedia();
+        List<String> gifs = new ArrayList<String>();
+        Listing<Submission> gif_list = posts.next();
+        for (Submission s : gif_list) {
+            if (!s.isSelfPost() && s.getUrl().contains("gfycat.com"))
+            {
+                gifs.add(s.getUrl());
+            }
+            else if (!s.isSelfPost() && s.getUrl().contains(".gifv"))
+            {
+                gifs.add(s.getUrl());
+            }
+        }
 
-        return s.getUrl();
+        //if s.isNsfw()
+        
+        if (gifs.size() == 0) return "This subreddit does not contain gif-based posts";
+        int random_number = (int) (gifs.size()*Math.random());
+        return gifs.get(random_number);
     }
 
 
@@ -82,7 +95,7 @@ public class RedditComments
     {
         RedditComments main = new RedditComments();
         //System.out.println(main.findComment("pcmasterrace"));
-        //System.out.println(main.getPhotoLink("CarPorn"));
-        System.out.println(main.getGIFLink("gifs"));
+        System.out.println(main.getPhotoLink("minecraft"));
+        //System.out.println(main.getGIFLink("depression"));
     }
 }
