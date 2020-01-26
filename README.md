@@ -1,4 +1,4 @@
-[![](https://img.shields.io/badge/Gradle-6.0.1-brightgreen)](https://gradle.org/) [![](https://img.shields.io/badge/JRAW-v1.1.0-red)(https://github.com/mattbdean/JRAW) [![](https://img.shields.io/badge/JDA-4.1.1__101-blue)](https://github.com/DV8FromTheWorld/JDA)
+[![](https://img.shields.io/badge/Gradle-6.0.1-brightgreen)](https://gradle.org/) [![](https://img.shields.io/badge/JRAW-v1.1.0-red)](https://github.com/mattbdean/JRAW) [![](https://img.shields.io/badge/JDA-4.1.1__101-blue)](https://github.com/DV8FromTheWorld/JDA)
 
 # RedditContent-Discord-Bot
 A Discord bot that displays various Reddit content from requested subreddits.
