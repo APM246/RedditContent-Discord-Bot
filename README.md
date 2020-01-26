@@ -2,23 +2,23 @@
 # RedditContent-Discord-Bot
 A Discord bot that displays various Reddit content from requested subreddits.
 
-Commands at the moment: 
+Commands: 
 
-\>help
+- \>help
 
-\>comment \[subreddit name]
+- \>comment \[subreddit name]
 
-\>photo \[subreddit name]
+- \>photo \[subreddit name]
 
-\>gif \[subreddit name]
+- \>gif \[subreddit name]
 
-\>joke
+- \>joke
 
-\>news
+- \>news
 
-\>about
+- \>about
 
-Will add more functionality
+More commands planned
 
 ## Hosting
 The bot is currently being hosted on a free Amazon Web Service EC2 Ubuntu-16.04 instance. Inquiries can be sent 
