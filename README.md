@@ -1,3 +1,4 @@
+[![](https://img.shields.io/badge/Gradle-6.0.1-brightgreen)](https://gradle.org/)
 # RedditContent-Discord-Bot
 A Discord bot that displays various Reddit content from requested subreddits.
 
