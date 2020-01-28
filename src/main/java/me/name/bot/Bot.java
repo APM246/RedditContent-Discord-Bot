@@ -3,6 +3,7 @@ package me.name.bot;
 import me.name.ConfigReader;
 import me.name.DadJokes;
 import me.name.NewsUpdates;
+import me.name.music.Music;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.JDABuilder;
@@ -39,7 +40,7 @@ public class Bot extends ListenerAdapter
             channel.sendMessage("```css\n" +
                                         ">comment [subreddit name] \n Displays newest comment from that subreddit\n \n>photo [subreddit name] \n " +
                                         "Displays a random photo from that subreddit\n \n>gif [subreddit name]\n Displays a random gif from that subreddit " +
-                                        "\n\n>joke \n Generates a random Dad Joke " + "\n\n>news \n Gets latest news headline from New York Times "
+                                        "\n\n>joke \n Generates a random Dad Joke " + "\n\n>news [top (optional)] \n Gets latest news headline from New York Times "
                                         + "\n\n>about \n Link to Github repository " + "\n```").queue();
         }
 
@@ -49,6 +50,7 @@ public class Bot extends ListenerAdapter
             {
                 RedditComments reddit = new RedditComments();
                 NewsUpdates newsUpdates = new NewsUpdates();
+                Music musicBot = new Music();
 
                 if (args[0].equals(">comment"))
                 {
@@ -89,6 +91,17 @@ public class Bot extends ListenerAdapter
                 {
                     String url = "https://github.com/APM246/RedditContent-Discord-Bot";
                     channel.sendMessage(url).queue();
+                }
+
+                else if (args[0].equals(">play"))
+                {
+                    args = content.split(" ", 2);
+                    musicBot.loadAndPlay(event.getTextChannel(), args[1]);
+                }
+
+                else if (args[0].equals(">skip"))
+                {
+                    musicBot.skipTrack(event.getTextChannel());
                 }
             }
 

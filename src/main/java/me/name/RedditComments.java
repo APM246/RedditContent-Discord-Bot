@@ -12,6 +12,7 @@ import net.dean.jraw.pagination.DefaultPaginator;
 import net.dean.jraw.references.SubredditReference;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class RedditComments
@@ -54,19 +55,24 @@ public class RedditComments
     public String getGIFLink(String subredditname)
     {
         DefaultPaginator<Submission> posts = reddit.subreddit(subredditname).posts().build();
-
         List<String> gifs = new ArrayList<String>();
-        Listing<Submission> gif_list = posts.next();
-        for (Submission s : gif_list) {
-            if (!s.isSelfPost() && s.getUrl().contains("gfycat.com"))
+        
+            for (Listing<Submission> page: posts)
             {
-                gifs.add(s.getUrl());
+                List<Submission> submissions = page.getChildren();
+
+                for (Submission s: submissions)
+                {
+                    if (!s.isSelfPost() && s.getUrl().contains("gfycat.com"))
+                    {
+                        gifs.add(s.getUrl());
+                    }
+                    else if (!s.isSelfPost() && s.getUrl().contains(".gifv"))
+                    {
+                        gifs.add(s.getUrl());
+                    }
+                }
             }
-            else if (!s.isSelfPost() && s.getUrl().contains(".gifv"))
-            {
-                gifs.add(s.getUrl());
-            }
-        }
 
         //if s.isNsfw()
         
@@ -95,7 +101,7 @@ public class RedditComments
     {
         RedditComments main = new RedditComments();
         //System.out.println(main.findComment("pcmasterrace"));
-        System.out.println(main.getPhotoLink("minecraft"));
-        //System.out.println(main.getGIFLink("depression"));
+        //System.out.println(main.getPhotoLink("minecraft"));
+        System.out.println(main.getGIFLink("RocketLeague"));
     }
 }
