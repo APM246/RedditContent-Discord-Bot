@@ -5,21 +5,24 @@
 # APM-Discord-Bot
 A Discord bot that displays various Reddit content from requested subreddits.
 
-Commands: 
+Meta Commands: 
 
 - \>help
+- \>about
+
+Reddit Commands:
 
 - \>comment \[subreddit name]
-
 - \>photo \[subreddit name]
-
 - \>gif \[subreddit name]
 
+Music Commands:
+- \>play \[Youtube url]
+- \>skip
+
+Misc:
 - \>joke
-
-- \>news [top] 
-
-- \>about
+- \>news [top (optional)] 
 
 More commands planned
 
