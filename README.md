@@ -2,7 +2,7 @@
 
 ![](https://i.imgur.com/ZGHw0G2.png)
 
-# RedditContent-Discord-Bot
+# APM-Discord-Bot
 A Discord bot that displays various Reddit content from requested subreddits.
 
 Commands: 
