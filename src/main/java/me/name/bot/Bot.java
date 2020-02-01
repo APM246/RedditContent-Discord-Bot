@@ -3,6 +3,7 @@ package me.name.bot;
 import me.name.ConfigReader;
 import me.name.DadJokes;
 import me.name.NewsUpdates;
+import me.name.exceptions.SubredditDoesNotExistException;
 import me.name.music.Music;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
@@ -13,14 +14,37 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.annotation.Nonnull;
 import me.name.RedditComments;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import java.io.InputStream;
 
 
 public class Bot extends ListenerAdapter
 {
+    private static String read_md()
+    {
+        String message = "";
+
+        try
+        {
+            ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+            InputStream inputStream = classloader.getResourceAsStream("help.txt");
+            String encoding = null;
+            message = IOUtils.toString(inputStream, encoding);
+        }
+        catch (Exception e) 
+        {
+            e.printStackTrace();
+        }
+
+        return message;
+    }
+
     public static void main(String[] args) throws Exception
     {
         new JDABuilder(ConfigReader.retrieveBotToken()).addEventListeners(new Bot()).
-                setActivity(Activity.playing("type >help")).build();
+               setActivity(Activity.playing("type >help")).build();
+        //System.out.println(read_md());
     }
 
     @Override
@@ -37,11 +61,12 @@ public class Bot extends ListenerAdapter
 
         if (args[0].equals(">help"))
         {
-            channel.sendMessage("```css\n" +
+            /*channel.sendMessage("```css\n" +
                                         ">comment [subreddit name] \n Displays newest comment from that subreddit\n \n>photo [subreddit name] \n " +
                                         "Displays a random photo from that subreddit\n \n>gif [subreddit name]\n Displays a random gif from that subreddit " +
                                         "\n\n>joke \n Generates a random Dad Joke " + "\n\n>news [top (optional)] \n Gets latest news headline from New York Times "
-                                        + "\n\n>about \n Link to Github repository " + "\n```").queue();
+                                        + "\n\n>about \n Link to Github repository " + "\n```").queue();*/
+            channel.sendMessage(read_md()).queue();
         }
 
         else
@@ -103,11 +128,16 @@ public class Bot extends ListenerAdapter
                 {
                     musicBot.skipTrack(event.getTextChannel());
                 }
+
+                else if (args[0].equals(">stop"))
+                {
+                    musicBot.kickBot();
+                }
             }
 
-            catch (IndexOutOfBoundsException e)
+            catch (SubredditDoesNotExistException e)
             {
-                String[] error_messages = {"No such subreddit exists buddy", "That subreddit doesn't exist...", "You spelt it wrong idiot", "Do you know how to use a keyboard?"};
+                String[] error_messages = {"PLEASE learn how to spell", "Here is a website to improve your spelling: https://howtospell.co.uk/spelling.php", "You spelt it wrong idiot", "Do you know how to use a keyboard?", "You didn't spell that right :/"};
                 int random_number = (int) (Math.random()*error_messages.length);
                 channel.sendMessage(error_messages[random_number]).queue();
             }
@@ -115,7 +145,7 @@ public class Bot extends ListenerAdapter
             catch (Exception e)
             {
                 e.printStackTrace();
-                channel.sendMessage("Something went wrong  :'(").queue();
+                channel.sendMessage("```\nYou encountered a new bug! Please report to @APM.\n```").queue();
             }
         }
     }

@@ -1,5 +1,6 @@
 package me.name;
 
+import me.name.exceptions.SubredditDoesNotExistException;
 import net.dean.jraw.*;
 import net.dean.jraw.http.NetworkAdapter;
 import net.dean.jraw.http.OkHttpNetworkAdapter;
@@ -12,7 +13,6 @@ import net.dean.jraw.pagination.DefaultPaginator;
 import net.dean.jraw.references.SubredditReference;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class RedditComments
@@ -30,12 +30,17 @@ public class RedditComments
         reddit = OAuthHelper.automatic(adapter, credentials);
     }
 
-    public String getPhotoLink(String subredditName)
+    public String getPhotoLink(String subredditName) throws SubredditDoesNotExistException
     {
+        try {
         DefaultPaginator<Submission> posts = reddit.subreddit(subredditName).posts().build();
 
         List<String> images = new ArrayList<String>();
         Listing<Submission> photo_list = posts.next();
+
+        // Throw error if subreddit does not exist
+        if (photo_list.isEmpty()) throw new SubredditDoesNotExistException();
+
         for (Submission s : photo_list) {
             if (!s.isSelfPost() && s.getUrl().contains("i.imgur.com"))
             {
@@ -47,47 +52,63 @@ public class RedditComments
             }
         }
 
-        if (images.size() == 0) return "This subreddit does not contain image-based posts";
-        int random_number = (int) (images.size()*Math.random());
-        return images.get(random_number);
+            if (images.size() == 0) return "This subreddit does not contain image-based posts";
+            int random_number = (int) (images.size()*Math.random());
+            return images.get(random_number);
+        }
+
+        catch (ApiException apiException)
+        {
+            throw new SubredditDoesNotExistException();
+        }
     }
 
-    public String getGIFLink(String subredditname)
+    public String getGIFLink(String subredditname) throws SubredditDoesNotExistException
     {
-        DefaultPaginator<Submission> posts = reddit.subreddit(subredditname).posts().build();
-        List<String> gifs = new ArrayList<String>();
-        
-            for (Listing<Submission> page: posts)
-            {
-                List<Submission> submissions = page.getChildren();
+        try 
+        {
+            DefaultPaginator<Submission> posts = reddit.subreddit(subredditname).posts().build();
+            List<String> gifs = new ArrayList<String>();
+            Listing<Submission> page = posts.next();
 
-                for (Submission s: submissions)
+            // Throw error if subreddit name is wrong
+            if (page.isEmpty()) throw new SubredditDoesNotExistException();
+
+            for (Submission s: page)
+            {
+                if (!s.isSelfPost() && s.getUrl().contains("gfycat.com"))
                 {
-                    if (!s.isSelfPost() && s.getUrl().contains("gfycat.com"))
-                    {
-                        gifs.add(s.getUrl());
-                    }
-                    else if (!s.isSelfPost() && s.getUrl().contains(".gifv"))
-                    {
-                        gifs.add(s.getUrl());
-                    }
+                    gifs.add(s.getUrl());
+                }
+                else if (!s.isSelfPost() && s.getUrl().contains(".gifv"))
+                {
+                    gifs.add(s.getUrl());
                 }
             }
 
-        //if s.isNsfw()
+            //if s.isNsfw()
         
-        if (gifs.size() == 0) return "This subreddit does not contain gif-based posts";
-        int random_number = (int) (gifs.size()*Math.random());
-        return gifs.get(random_number);
+            if (gifs.size() == 0) return "This subreddit does not contain gif-based posts";
+            int random_number = (int) (gifs.size()*Math.random());
+            return gifs.get(random_number);
+        }
+
+        catch (ApiException apiException)
+        {
+            throw new SubredditDoesNotExistException();
+        }
     }
 
 
-    public String findComment(String subredditName)
+    public String findComment(String subredditName) throws SubredditDoesNotExistException
     {
         SubredditReference subreddit = reddit.subreddit(subredditName);
         BarebonesPaginator.Builder<Comment> comments = subreddit.comments();
         BarebonesPaginator<Comment> built = comments.build();
         List<Comment> commentslist = built.accumulateMerged(1);
+
+        // Throw error if subreddit does not exist
+        if (commentslist.isEmpty()) throw new SubredditDoesNotExistException();
 
         return commentslist.get(0).getBody();
 
@@ -97,11 +118,11 @@ public class RedditComments
         }*/
     }
 
-    public static void main(String[] args)
+    public static void main(String[] args) throws Exception
     {
         RedditComments main = new RedditComments();
         //System.out.println(main.findComment("pcmasterrace"));
         //System.out.println(main.getPhotoLink("minecraft"));
-        System.out.println(main.getGIFLink("RocketLeague"));
+        System.out.println(main.getGIFLink("bruh"));
     }
 }

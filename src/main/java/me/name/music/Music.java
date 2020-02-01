@@ -1,32 +1,19 @@
 package me.name.music;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Future;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 import com.sedmelluq.discord.lavaplayer.player.*;
-import com.sedmelluq.discord.lavaplayer.remote.RemoteNodeRegistry;
-import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
-import com.sedmelluq.discord.lavaplayer.tools.io.MessageInput;
-import com.sedmelluq.discord.lavaplayer.tools.io.MessageOutput;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrackState;
-import com.sedmelluq.discord.lavaplayer.track.DecodedTrackHolder;
-import com.sedmelluq.discord.lavaplayer.track.TrackMarker;
+
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.impl.client.HttpClientBuilder;
 
 public class Music
 {
@@ -38,6 +25,7 @@ public class Music
     {
         musicManagers = new HashMap<>();
         playerManager = new DefaultAudioPlayerManager();
+        playerManager.setPlayerCleanupThreshold(200000);
         AudioSourceManagers.registerRemoteSources(playerManager);
     }
 
@@ -81,7 +69,7 @@ public class Music
 
             @Override
             public void noMatches() {
-                channel.sendMessage("Nothing found by " + trackUrl).queue();
+                channel.sendMessage("Cannot find:  " + trackUrl).queue();
             }
 
             @Override
@@ -111,6 +99,11 @@ public class Music
                 break;
             }
         }
+    }
+
+    public void kickBot()
+    {
+        playerManager.shutdown();
     }
 }
 
