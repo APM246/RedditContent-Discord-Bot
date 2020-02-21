@@ -13,10 +13,10 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.annotation.Nonnull;
-import me.name.RedditComments;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import java.io.InputStream;
+import org.apache.commons.io.IOUtils;
+
+import me.name.RedditComments;
 
 
 public class Bot extends ListenerAdapter
@@ -43,16 +43,13 @@ public class Bot extends ListenerAdapter
     public static void main(String[] args) throws Exception
     {
         new JDABuilder(ConfigReader.retrieveBotToken()).addEventListeners(new Bot()).
-               setActivity(Activity.playing("type >help")).build();
-        //System.out.println(read_md());
+                setActivity(Activity.playing("type >help")).build();
     }
 
     @Override
     public void onMessageReceived(@Nonnull MessageReceivedEvent event)
     {
-        if (event.getAuthor().isBot()) return;
-        // don't respond to bots (including self)
-
+        if (event.getAuthor().isBot()) return; // don't respond to bots (including self)
         Message message = event.getMessage();
         if (message.getAuthor().isBot()) return;
         String content = message.getContentRaw();
@@ -61,11 +58,6 @@ public class Bot extends ListenerAdapter
 
         if (args[0].equals(">help"))
         {
-            /*channel.sendMessage("```css\n" +
-                                        ">comment [subreddit name] \n Displays newest comment from that subreddit\n \n>photo [subreddit name] \n " +
-                                        "Displays a random photo from that subreddit\n \n>gif [subreddit name]\n Displays a random gif from that subreddit " +
-                                        "\n\n>joke \n Generates a random Dad Joke " + "\n\n>news [top (optional)] \n Gets latest news headline from New York Times "
-                                        + "\n\n>about \n Link to Github repository " + "\n```").queue();*/
             channel.sendMessage(read_md()).queue();
         }
 
@@ -76,6 +68,23 @@ public class Bot extends ListenerAdapter
                 RedditComments reddit = new RedditComments();
                 NewsUpdates newsUpdates = new NewsUpdates();
                 Music musicBot = new Music();
+
+                if (event.getTextChannel().isNSFW())
+                {
+                    if (args[0].equals(">photo"))
+                    {
+                        String url = reddit.getPhotoLink(args[1]);
+                        channel.sendMessage(url).queue();
+                        return;
+                    }
+
+                    else if (args[0].equals(">gif"))
+                    {
+                        String url = reddit.getGIFLink(args[1]);
+                        channel.sendMessage(url).queue();
+                        return;
+                    }
+                }
 
                 if (args[0].equals(">comment"))
                 {
@@ -121,7 +130,7 @@ public class Bot extends ListenerAdapter
                 else if (args[0].equals(">play"))
                 {
                     args = content.split(" ", 2);
-                    musicBot.loadAndPlay(event.getTextChannel(), args[1]);
+                    musicBot.loadAndPlay(event.getTextChannel(), musicBot.searchTermtoURL(args[1]));
                 }
 
                 else if (args[0].equals(">skip"))

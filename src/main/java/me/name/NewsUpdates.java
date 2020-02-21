@@ -67,7 +67,7 @@ public class NewsUpdates
 
         return remove_backslahes(url);
     }
-
+    
     public static void main(String[] args)
     {
         try

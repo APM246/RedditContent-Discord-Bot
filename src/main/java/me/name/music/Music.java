@@ -1,7 +1,11 @@
 package me.name.music;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.json.*;
 
 import com.sedmelluq.discord.lavaplayer.player.*;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
@@ -25,7 +29,7 @@ public class Music
     {
         musicManagers = new HashMap<>();
         playerManager = new DefaultAudioPlayerManager();
-        playerManager.setPlayerCleanupThreshold(200000);
+        playerManager.setPlayerCleanupThreshold(100000);
         AudioSourceManagers.registerRemoteSources(playerManager);
     }
 
@@ -104,6 +108,57 @@ public class Music
     public void kickBot()
     {
         playerManager.shutdown();
+    }
+
+    private String searchTermtoID(String searchTerm) throws IOException
+    {
+        searchTerm = searchTerm.replaceAll(" ", "%20");
+        String command =
+                "curl \"https://www.googleapis.com/youtube/v3/search?part=id&order=relevance&q=" + searchTerm +
+                        "&type=video&key=AIzaSyCvl7NSvJ0t5-iT0knUiuL8cuBdgqglUFc\"";
+
+        ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
+        Process process = processBuilder.start();
+        InputStream inputStream = process.getInputStream();
+        byte[] bytes = new byte[50000];
+        int letter;
+        int i = 0;
+
+        while ((letter = inputStream.read()) != -1)
+        {
+            bytes[i] = (byte) letter;
+            i++;
+        }
+
+        String json_text = new String(bytes, 0, i);
+        //System.out.println(json_text); return "";
+
+        JSONObject original_jsonObject = new JSONObject(json_text);
+        JSONArray jsonArray = original_jsonObject.getJSONArray("items");
+        JSONObject jsonObject = jsonArray.getJSONObject(0);
+        JSONObject video = jsonObject.getJSONObject("id");
+        String videoID = video.getString("videoId");
+
+        return videoID;
+    }
+
+    public String searchTermtoURL(String searchTerm) throws IOException
+    {
+        return "https://www.youtube.com/watch?v=" + searchTermtoID(searchTerm);
+    }
+
+    public static void main(String[] args)
+    {
+        try
+        {
+            System.out.println(new Music().searchTermtoURL("ASMR"));
+            System.out.println(new Music().searchTermtoURL("Liverpool FC"));
+        }
+
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 }
 
