@@ -1,0 +1,32 @@
+```css
+--------------------  Reddit -----------------------
+>comment [subreddit name] 
+ Displays newest comment from that subreddit
+
+>photo [subreddit name] 
+ Displays a random photo from that subreddit
+
+>gif [subreddit name]
+ Displays a random gif from that subreddit
+
+--------------------  Music -----------------------
+>play [Youtube video name]
+ Play a song from Youtube
+
+>skip
+ Stop the currently playing song.
+
+--------------------  Miscellaneous -----------------------
+>joke 
+ Generates a random Dad Joke
+
+>news [top (optional)]
+ Gets latest news headline from New York Times 
+
+--------------------  Meta -----------------------
+>about
+ Link to Github repository
+
+>help
+Generates this message
+```
