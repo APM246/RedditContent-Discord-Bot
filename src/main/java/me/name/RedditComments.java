@@ -34,7 +34,6 @@ public class RedditComments
     {
         try {
         DefaultPaginator<Submission> posts = reddit.subreddit(subredditName).posts().build();
-
         List<String> images = new ArrayList<String>();
         Listing<Submission> photo_list = posts.next();
 

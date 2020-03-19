@@ -40,8 +40,24 @@ public class Bot extends ListenerAdapter
         return message;
     }
 
+    private static boolean isInappropriate(String redditName)
+    {
+        String[] banned_list = {"gayporn","dick","demirosemawby","realscatgirls","IndiansGoneWild"};
+
+        for (String reddit: banned_list) 
+        {
+            if (redditName.equals(reddit)) 
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static void main(String[] args) throws Exception
     {
+        //System.out.println(read_md());
         new JDABuilder(ConfigReader.retrieveBotToken()).addEventListeners(new Bot()).
                 setActivity(Activity.playing("type >help")).build();
     }
@@ -69,7 +85,7 @@ public class Bot extends ListenerAdapter
                 NewsUpdates newsUpdates = new NewsUpdates();
                 Music musicBot = new Music();
 
-                if (event.getTextChannel().isNSFW())
+                /*if (event.getTextChannel().isNSFW())
                 {
                     if (args[0].equals(">photo"))
                     {
@@ -84,7 +100,7 @@ public class Bot extends ListenerAdapter
                         channel.sendMessage(url).queue();
                         return;
                     }
-                }
+                }*/
 
                 if (args[0].equals(">comment"))
                 {
@@ -93,14 +109,40 @@ public class Bot extends ListenerAdapter
                 }
                 else if (args[0].equals(">photo"))
                 {
-                    String url = reddit.getPhotoLink(args[1]);
-                    channel.sendMessage(url).queue();
+                    if (isInappropriate(args[1]))
+                    {
+                        String special_message = 
+                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?" + 
+                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?" + 
+                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?" + 
+                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?";
+                        channel.sendMessage(special_message).queue();
+                    }
+
+                    else 
+                    {
+                        String url = reddit.getPhotoLink(args[1]);
+                        channel.sendMessage(url).queue();
+                    }
                 }
 
                 else if (args[0].equals(">gif"))
                 {
-                    String url = reddit.getGIFLink(args[1]);
-                    channel.sendMessage(url).queue();
+                    if (isInappropriate(args[1]))
+                    {
+                        String special_message = 
+                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?" + 
+                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?" + 
+                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?" + 
+                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?";
+                        channel.sendMessage(special_message).queue();
+                    }   
+                    
+                    else 
+                    {
+                        String url = reddit.getGIFLink(args[1]);
+                        channel.sendMessage(url).queue();
+                    }
                 }
 
                 else if (args[0].equals(">joke"))
@@ -130,6 +172,7 @@ public class Bot extends ListenerAdapter
                 else if (args[0].equals(">play"))
                 {
                     args = content.split(" ", 2);
+                    System.out.println(args.toString());
                     musicBot.loadAndPlay(event.getTextChannel(), musicBot.searchTermtoURL(args[1]));
                 }
 
@@ -146,15 +189,58 @@ public class Bot extends ListenerAdapter
 
             catch (SubredditDoesNotExistException e)
             {
-                String[] error_messages = {"PLEASE learn how to spell", "Here is a website to improve your spelling: https://howtospell.co.uk/spelling.php", "You spelt it wrong idiot", "Do you know how to use a keyboard?", "You didn't spell that right :/"};
-                int random_number = (int) (Math.random()*error_messages.length);
-                channel.sendMessage(error_messages[random_number]).queue();
+                
+                    String id = event.getAuthor().getDiscriminator();
+
+                    if (id.equals("0998"))
+                    {
+                        channel.sendMessage("Unluckeeeeeeeeeeeeeeeeeee try again").queue();
+                    }
+
+                    else if (id.equals("6934"))
+                    {
+                        channel.sendMessage("Do they teach spelling in Serbia?").queue();
+                    }
+
+                    else if (id.equals("4360"))
+                    {
+                        channel.sendMessage("Shit at Rocket League and spelling").queue();
+                    }
+                    
+                    else if (id.equals("0588"))
+                    {
+                        channel.sendMessage("LING LONG DING DONG TRY AGAIN").queue();
+                    }
+
+                    else if (id.equals("2201"))
+                    {
+                        channel.sendMessage(",d ,d ,d ,d ,d ,d ,d ,d ,d ,d").queue();
+                    }
+
+                    else if (id.equals("4469"))
+                    {
+                        channel.sendMessage("Shouldn't you be studying Python right now").queue();
+                    }
+
+                    else if (id.equals("8389"))
+                    {
+                        channel.sendMessage("You didn't spell r/raven right").queue();
+                    }
+                    
+                    else 
+                    {
+                        String[] error_messages = {"Wrong spelling", "PLEASE learn how to spell", "Incorrectly spelt u cunt", "You spelt it wrong idiot",
+                        "Do you know how to use a keyboard?", "You didn't spell that right :/", "Hayden ur so shit at spelling",
+                        "Fuck off with that shit spelling", "Try again with the spelling"};
+                        int random_number = (int) (Math.random()*error_messages.length);
+                        channel.sendMessage(error_messages[random_number]).queue();
+                    }
             }
 
             catch (Exception e)
             {
                 e.printStackTrace();
-                channel.sendMessage("```\nYou encountered a new bug! Please report to @APM.\n```").queue();
+                channel.sendMessage("```\nSomething went wrong.\n```").queue();
             }
         }
     }

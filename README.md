@@ -17,7 +17,7 @@ Reddit Commands:
 - \>gif \[subreddit name]
 
 Music Commands:
-- \>play \[Youtube url]
+- \>play \[Name of Youtube video]
 - \>skip
 
 Misc:

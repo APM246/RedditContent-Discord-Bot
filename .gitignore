@@ -65,3 +65,5 @@ launch.bat
 readme.png
 .vscode/settings.json
 bin
+.settings/org.eclipse.jdt.core.prefs
+*.pem

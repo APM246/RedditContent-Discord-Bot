@@ -105,7 +105,7 @@ public class Music
         }
     }
 
-    public void kickBot()
+    public void kickBot() 
     {
         playerManager.shutdown();
     }
@@ -151,8 +151,8 @@ public class Music
     {
         try
         {
-            System.out.println(new Music().searchTermtoURL("ASMR"));
-            System.out.println(new Music().searchTermtoURL("Liverpool FC"));
+            System.out.println(new Music().searchTermtoURL("Yamborghini High"));
+            System.out.println(new Music().searchTermtoURL("Forget you"));
         }
 
         catch (Exception e)
