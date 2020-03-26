@@ -3,6 +3,7 @@ package me.name;
 import me.name.exceptions.SubredditDoesNotExistException;
 import net.dean.jraw.*;
 import net.dean.jraw.http.NetworkAdapter;
+import net.dean.jraw.http.NetworkException;
 import net.dean.jraw.http.OkHttpNetworkAdapter;
 import net.dean.jraw.http.UserAgent;
 import net.dean.jraw.models.*;
@@ -32,31 +33,32 @@ public class RedditComments
 
     public String getPhotoLink(String subredditName) throws SubredditDoesNotExistException
     {
-        try {
-        DefaultPaginator<Submission> posts = reddit.subreddit(subredditName).posts().build();
-        List<String> images = new ArrayList<String>();
-        Listing<Submission> photo_list = posts.next();
+        try 
+        {
+            DefaultPaginator<Submission> posts = reddit.subreddit(subredditName).posts().build();
+            List<String> images = new ArrayList<String>();
+            Listing<Submission> photo_list = posts.next();
 
-        // Throw error if subreddit does not exist
-        if (photo_list.isEmpty()) throw new SubredditDoesNotExistException();
+            // Throw error if subreddit does not exist
+            if (photo_list.isEmpty()) throw new SubredditDoesNotExistException();
 
-        for (Submission s : photo_list) {
-            if (!s.isSelfPost() && s.getUrl().contains("i.imgur.com"))
-            {
-                images.add(s.getUrl());
+            for (Submission s : photo_list) {
+                if (!s.isSelfPost() && s.getUrl().contains("i.imgur.com"))
+                {
+                    images.add(s.getUrl());
+                }
+                else if (!s.isSelfPost() && s.getUrl().contains("i.redd.it"))
+                {
+                    images.add(s.getUrl());
+                }
             }
-            else if (!s.isSelfPost() && s.getUrl().contains("i.redd.it"))
-            {
-                images.add(s.getUrl());
-            }
-        }
 
             if (images.size() == 0) return "This subreddit does not contain image-based posts";
             int random_number = (int) (images.size()*Math.random());
             return images.get(random_number);
         }
 
-        catch (ApiException apiException)
+        catch (Exception e)
         {
             throw new SubredditDoesNotExistException();
         }
@@ -92,7 +94,7 @@ public class RedditComments
             return gifs.get(random_number);
         }
 
-        catch (ApiException apiException)
+        catch (Exception e)
         {
             throw new SubredditDoesNotExistException();
         }
@@ -101,27 +103,53 @@ public class RedditComments
 
     public String findComment(String subredditName) throws SubredditDoesNotExistException
     {
-        SubredditReference subreddit = reddit.subreddit(subredditName);
-        BarebonesPaginator.Builder<Comment> comments = subreddit.comments();
-        BarebonesPaginator<Comment> built = comments.build();
-        List<Comment> commentslist = built.accumulateMerged(1);
-
-        // Throw error if subreddit does not exist
-        if (commentslist.isEmpty()) throw new SubredditDoesNotExistException();
-
-        return commentslist.get(0).getBody();
-
-        /*for (Comment comment: built.accumulateMerged(1))
+        try
         {
-            System.out.println(comment.getBody());
-        }*/
+            SubredditReference subreddit = reddit.subreddit(subredditName);
+            BarebonesPaginator.Builder<Comment> comments = subreddit.comments();
+            BarebonesPaginator<Comment> built = comments.build();
+            List<Comment> commentslist = built.accumulateMerged(1);
+
+            // Throw error if subreddit does not exist
+            if (commentslist.isEmpty()) throw new SubredditDoesNotExistException();
+
+            return commentslist.get(0).getBody();
+        }
+
+        catch (NetworkException e)
+        {
+            throw new SubredditDoesNotExistException();
+        }
+    }
+
+    public String searchSubreddits(String searchwords) 
+    {
+        try
+        {
+            List<SubredditSearchResult> list = reddit.searchSubredditsByName(searchwords);
+            if (list.isEmpty()) throw new SubredditDoesNotExistException();
+
+            String result= "";
+
+            for (SubredditSearchResult subreddit: list)
+            {
+                result += "\n" + subreddit.getName();
+            }
+
+            return result;
+        }
+
+        catch (Exception e)
+        {
+            return "No subreddits could be found based on this search query";
+        }
     }
 
     public static void main(String[] args) throws Exception
     {
         RedditComments main = new RedditComments();
         //System.out.println(main.findComment("pcmasterrace"));
-        //System.out.println(main.getPhotoLink("minecraft"));
-        System.out.println(main.getGIFLink("bruh"));
+        //System.out.println(main.getPhotoLink("nrueq r4eu2trb42t  t24t"));
+        System.out.println(main.searchSubreddits("nvidia 2070"));
     }
 }

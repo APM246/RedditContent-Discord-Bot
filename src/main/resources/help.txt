@@ -1,5 +1,5 @@
 ```css
---------------------  Reddit -----------------------
+--------------------  Reddit ---------------------
 >comment [subreddit name] 
  Displays newest comment from that subreddit
 
@@ -9,14 +9,17 @@
 >gif [subreddit name]
  Displays a random gif from that subreddit
 
---------------------  Music -----------------------
+ >search [search terms]
+ Returns a list of subreddits based on the search terms 
+
+--------------------  Music ----------------------
 >play [Youtube video name]
  Play a song from Youtube
 
 >skip
  Stop the currently playing song.
 
---------------------  Miscellaneous -----------------------
+--------------------  Miscellaneous --------------
 >joke 
  Generates a random Dad Joke
 
@@ -29,4 +32,7 @@
 
 >help
 Generates this message
+
+>update
+Summary of latest update to the bot (patch notes)
 ```
