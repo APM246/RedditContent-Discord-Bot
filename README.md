@@ -3,18 +3,20 @@
 ![](https://i.imgur.com/ZGHw0G2.png)
 
 # APM-Discord-Bot
-A Discord bot that displays various Reddit content from requested subreddits.
+A Discord bot that displays Reddit content, plays music, reports latest news and more. 
 
 Meta Commands: 
 
 - \>help
 - \>about
+= \>update
 
 Reddit Commands:
 
 - \>comment \[subreddit name]
 - \>photo \[subreddit name]
 - \>gif \[subreddit name]
+- \>search [search terms]
 
 Music Commands:
 - \>play \[Name of Youtube video]
@@ -29,3 +31,4 @@ More commands planned
 ## Hosting
 The bot is currently being hosted on a free Amazon Web Service EC2 Ubuntu-16.04 instance. Inquiries can be sent 
 to apm0366@gmail.com
+
