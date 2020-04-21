@@ -11,9 +11,11 @@ import net.dean.jraw.oauth.Credentials;
 import net.dean.jraw.oauth.OAuthHelper;
 import net.dean.jraw.pagination.BarebonesPaginator;
 import net.dean.jraw.pagination.DefaultPaginator;
+import net.dean.jraw.pagination.Paginator;
 import net.dean.jraw.references.SubredditReference;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class RedditComments
@@ -36,18 +38,14 @@ public class RedditComments
         try 
         {
             DefaultPaginator<Submission> posts = reddit.subreddit(subredditName).posts().build();
-            List<String> images = new ArrayList<String>();
+            List<String> images = new ArrayList<>();
             Listing<Submission> photo_list = posts.next();
 
             // Throw error if subreddit does not exist
             if (photo_list.isEmpty()) throw new SubredditDoesNotExistException();
 
             for (Submission s : photo_list) {
-                if (!s.isSelfPost() && s.getUrl().contains("i.imgur.com"))
-                {
-                    images.add(s.getUrl());
-                }
-                else if (!s.isSelfPost() && s.getUrl().contains("i.redd.it"))
+                if (!s.isSelfPost() && (s.getUrl().contains("i.imgur.com") || s.getUrl().contains("i.redd.it")))
                 {
                     images.add(s.getUrl());
                 }
@@ -145,11 +143,35 @@ public class RedditComments
         }
     }
 
+    public String[] guessCity() 
+    {
+        try 
+        {
+            DefaultPaginator<Submission> posts = reddit.subreddit("CityPorn").posts().limit(Paginator.RECOMMENDED_MAX_LIMIT).build();
+            List<Submission> submissions = new ArrayList<>();
+            Listing<Submission> page = posts.next();
+
+            for (Submission s: page)
+            {
+                if (!s.isSelfPost() && (s.getUrl().contains("i.imgur.com") || s.getUrl().contains("i.redd.it")))
+                {
+                    submissions.add(s);
+                }
+            }
+
+            int random_number = (int) (submissions.size()*Math.random());
+            Submission question = submissions.get(random_number);
+            return new String[] {question.getUrl(), question.getTitle()};
+        }
+        catch (Exception e) {return null;}
+    }
+
     public static void main(String[] args) throws Exception
     {
         RedditComments main = new RedditComments();
         //System.out.println(main.findComment("pcmasterrace"));
-        //System.out.println(main.getPhotoLink("nrueq r4eu2trb42t  t24t"));
-        System.out.println(main.searchSubreddits("nvidia 2070"));
+        //System.out.println(main.getPhotoLink("earthporn"));
+        //System.out.println(main.searchSubreddits("nvidia 2070"));
+        System.out.println(Arrays.toString(main.guessCity()));
     }
 }

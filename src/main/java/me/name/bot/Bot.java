@@ -21,6 +21,11 @@ import me.name.RedditComments;
 
 public class Bot extends ListenerAdapter
 {
+    private boolean isLocked = false;
+    private Player player;
+    private String[] output; 
+    private int n_tries;
+
     private static String read_file(String fileName)
     {
         String message = "";
@@ -42,7 +47,7 @@ public class Bot extends ListenerAdapter
 
     private static boolean isInappropriate(String redditName)
     {
-        String[] banned_list = {"gayporn","dick","demirosemawby","realscatgirls","IndiansGoneWild", "ttotm", "trap", "pooping", "sounding"};
+        String[] banned_list = {"gayporn","dick","demirosemawby","realscatgirls", "realscatguys", "IndiansGoneWild", "ttotm", "trap", "pooping", "sounding", "tgirls"};
 
         for (String reddit: banned_list) 
         {
@@ -91,7 +96,46 @@ public class Bot extends ListenerAdapter
                 NewsUpdates newsUpdates = new NewsUpdates();
                 Music musicBot = new Music();
 
-                if (command.equals(">comment"))
+                if (command.equals(">game") && !isLocked)
+                {
+                    n_tries = 0;
+                    player = new Player(message.getChannel().getIdLong());
+                    isLocked = true;
+                    output = reddit.guessCity();
+                    channel.sendMessage(output[0] + "\n" + "Try and guess the name of the city or country").queue();
+
+                }
+
+                else if (command.equals(">guess") && isLocked)
+                {
+                    if (message.getChannel().getIdLong() == player.getchannelID())
+                    {
+                        if (n_tries > 10) 
+                        {
+                            player = null;
+                            isLocked = false;
+                            channel.sendMessage("10 guesses are over (╯°□°)╯︵ ┻━┻").queue();
+                            channel.sendMessage("The title of the post was: " + output[1]).queue();
+                        }
+
+                        String attempt = args[1];
+                        if (output[1].toLowerCase().contains(attempt.toLowerCase()))
+                        {
+                            channel.sendMessage("Correct! (☞ ͡° ͜ʖ ͡°)☞").queue();
+                            player = null;
+                            isLocked = false;
+                        }
+                        else 
+                        {
+                            channel.sendMessage("Wrong (´･_･`)").queue();
+                            n_tries++;
+                        }
+                    }
+
+                    else channel.sendMessage("The game is not being played in this channel!");
+                }
+
+                else if (command.equals(">comment"))
                 {
                     String reddit_message = reddit.findComment(args[1]);
                     channel.sendMessage(reddit_message).queue();
@@ -144,6 +188,7 @@ public class Bot extends ListenerAdapter
                 {
                     String joke = DadJokes.generateDadJoke();
                     channel.sendMessage(joke).queue();
+                    channel.sendMessage("hi");
                 }
 
                 else if (command.equals(">news"))
