@@ -153,7 +153,7 @@ public class RedditComments
 
             for (Submission s: page)
             {
-                if (!s.isSelfPost() && (s.getUrl().contains("i.imgur.com") || s.getUrl().contains("i.redd.it")))
+                if (!s.isSelfPost() && s.getUrl().contains("i.redd.it"))
                 {
                     submissions.add(s);
                 }
@@ -161,7 +161,7 @@ public class RedditComments
 
             int random_number = (int) (submissions.size()*Math.random());
             Submission question = submissions.get(random_number);
-            return new String[] {question.getUrl(), question.getTitle()};
+            return new String[] {question.getUrl(), question.getTitle().replace(",", "").replace(".", "").toLowerCase()};
         }
         catch (Exception e) {return null;}
     }

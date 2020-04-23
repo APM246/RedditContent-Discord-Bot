@@ -110,6 +110,31 @@ public class Bot extends ListenerAdapter
                 {
                     if (message.getChannel().getIdLong() == player.getchannelID())
                     {
+                        String attempt = args[1].toLowerCase();
+                        attempt = attempt.replace("the", "");
+                        attempt = attempt.replace("city", "");
+                        attempt = attempt.replace("town", "");
+                        attempt = attempt.replace("river", "");
+
+                        for (String word: output[1].split(" "))
+                        {
+                            System.out.println("attempt: " + attempt);
+                            System.out.println("word: " + word);
+                            for (String attempt_word: attempt.split(" "))
+                            {                           
+                                if (attempt_word.equals(word))
+                                {
+                                    channel.sendMessage("Correct! (☞ ͡° ͜ʖ ͡°)☞").queue();
+                                    channel.sendMessage("The title of the post was: " + output[1]).queue();
+                                    player = null;
+                                    isLocked = false;
+                                    return;
+                                }
+                            }
+                        }
+            
+                        channel.sendMessage("Wrong (´･_･`)").queue();
+                        n_tries++;
                         if (n_tries > 10) 
                         {
                             player = null;
@@ -117,22 +142,20 @@ public class Bot extends ListenerAdapter
                             channel.sendMessage("10 guesses are over (╯°□°)╯︵ ┻━┻").queue();
                             channel.sendMessage("The title of the post was: " + output[1]).queue();
                         }
-
-                        String attempt = args[1];
-                        if (output[1].toLowerCase().contains(attempt.toLowerCase()))
-                        {
-                            channel.sendMessage("Correct! (☞ ͡° ͜ʖ ͡°)☞").queue();
-                            player = null;
-                            isLocked = false;
-                        }
-                        else 
-                        {
-                            channel.sendMessage("Wrong (´･_･`)").queue();
-                            n_tries++;
-                        }
+                        
                     }
 
                     else channel.sendMessage("The game is not being played in this channel!");
+                }
+
+                else if (command.equals(">quit") && isLocked)
+                {
+                    if (message.getChannel().getIdLong() == player.getchannelID())
+                    {
+                        channel.sendMessage("The title of the post was: " + output[1]).queue();
+                        player = null;
+                        isLocked = false;
+                    }
                 }
 
                 else if (command.equals(">comment"))
@@ -180,7 +203,6 @@ public class Bot extends ListenerAdapter
 
                 else if (command.equals(">search"))
                 {
-                    System.out.println(args[1]);
                     channel.sendMessage(reddit.searchSubreddits(args[1])).queue();
                 }
 

@@ -1,10 +1,13 @@
 ```css
 -------------------- Games -----------------------
 >game 
- Starts a game where you have to guess the location (city, state, country, etc.) of the photo. The text channel has 10 tries. 
+ Starts a game where you have to guess the location (city, state, country, etc.) of the photo. The text channel has 10 tries
 
 >guess [answer]
  Attempt a guess
+
+>quit
+ Stops the game and reveals the answer
 
 --------------------  Reddit ---------------------
 >comment [subreddit name] 
