@@ -33,12 +33,12 @@ public class RedditComments
         reddit = OAuthHelper.automatic(adapter, credentials);
     }
 
-    public String getPhotoLink(String subredditName) throws SubredditDoesNotExistException
+    public String[] getPhotoLink(String subredditName) throws SubredditDoesNotExistException
     {
         try 
         {
             DefaultPaginator<Submission> posts = reddit.subreddit(subredditName).posts().build();
-            List<String> images = new ArrayList<>();
+            List<String[]> images = new ArrayList<>();
             Listing<Submission> photo_list = posts.next();
 
             // Throw error if subreddit does not exist
@@ -47,11 +47,11 @@ public class RedditComments
             for (Submission s : photo_list) {
                 if (!s.isSelfPost() && (s.getUrl().contains("i.imgur.com") || s.getUrl().contains("i.redd.it")))
                 {
-                    images.add(s.getUrl());
+                    images.add(new String[] {s.getUrl(), "reddit.com" + s.getPermalink(), s.getTitle()});
                 }
             }
 
-            if (images.size() == 0) return "This subreddit does not contain image-based posts";
+            if (images.size() == 0) return null;
             int random_number = (int) (images.size()*Math.random());
             return images.get(random_number);
         }

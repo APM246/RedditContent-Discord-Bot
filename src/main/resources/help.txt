@@ -37,6 +37,9 @@
  Gets latest news headline from New York Times 
 
 --------------------  Meta -----------------------
+>stat [command]
+ Displays number of times a command has been requested
+
 >about
  Link to Github repository
 

@@ -6,9 +6,13 @@ import me.name.NewsUpdates;
 import me.name.exceptions.SubredditDoesNotExistException;
 import me.name.music.Music;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.MessageEmbed.Footer;
+import net.dv8tion.jda.api.entities.MessageEmbed.ImageInfo;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -47,7 +51,7 @@ public class Bot extends ListenerAdapter
 
     private static boolean isInappropriate(String redditName)
     {
-        String[] banned_list = {"gayporn","dick","demirosemawby","realscatgirls", "realscatguys", "IndiansGoneWild", "ttotm", "trap", "pooping", "sounding", "tgirls"};
+        String[] banned_list = {"gayporn","dick","demirosemawby","realscatgirls", "realscatguys", "IndiansGoneWild", "balls", "manass", "ttotm", "trap", "pooping", "sounding", "tgirls"};
 
         for (String reddit: banned_list) 
         {
@@ -78,38 +82,47 @@ public class Bot extends ListenerAdapter
         MessageChannel channel = event.getChannel();
         String command = args[0];
 
+        try {
+            StatsRecorder statRecorder = new StatsRecorder(); 
         if (command.equals(">help"))
         {
             channel.sendMessage(read_file("help.txt")).queue();
+            statRecorder.incrementCount(command.replace(">",""));
         }
 
         else if (command.equals(">update"))
         {
             channel.sendMessage(read_file("update.txt")).queue();
+            statRecorder.incrementCount(command.replace(">",""));
         }
 
         else 
         {
-            try
-            {
                 RedditComments reddit = new RedditComments();
                 NewsUpdates newsUpdates = new NewsUpdates();
                 Music musicBot = new Music();
 
-                if (command.equals(">game") && !isLocked)
+                if (command.equals(">game"))
                 {
-                    n_tries = 0;
-                    player = new Player(message.getChannel().getIdLong());
-                    isLocked = true;
-                    output = reddit.guessCity();
-                    channel.sendMessage(output[0] + "\n" + "Try and guess the name of the city or country").queue();
+                    if (!isLocked) 
+                    {
+                        n_tries = 0;
+                        player = new Player(message.getChannel().getIdLong());
+                        isLocked = true;
+                        output = reddit.guessCity();
+                        channel.sendMessage(output[0] + "\n" + "Try and guess the name of the city or country").queue();
+                        statRecorder.incrementCount(command.replace(">",""));
 
+                    }
+
+                    else channel.sendMessage("Game is being played in the " + channel.getName() + " channel").queue();
                 }
 
                 else if (command.equals(">guess") && isLocked)
                 {
                     if (message.getChannel().getIdLong() == player.getchannelID())
                     {
+                        statRecorder.incrementCount(command.replace(">",""));
                         String attempt = args[1].toLowerCase();
                         attempt = attempt.replace("the", "");
                         attempt = attempt.replace("city", "");
@@ -162,6 +175,7 @@ public class Bot extends ListenerAdapter
                 {
                     String reddit_message = reddit.findComment(args[1]);
                     channel.sendMessage(reddit_message).queue();
+                    statRecorder.incrementCount(command.replace(">",""));
                 }
                 else if (command.equals(">photo"))
                 {
@@ -177,8 +191,12 @@ public class Bot extends ListenerAdapter
 
                     else 
                     {
-                        String url = reddit.getPhotoLink(args[1]);
-                        channel.sendMessage(url).queue();
+                        statRecorder.incrementCount(command.replace(">",""));
+                        if (args[1].contains("raven")) statRecorder.incrementCount(args[1]);
+                        String[] photo_properties = reddit.getPhotoLink(args[1]);
+                        MessageEmbed embed = new MessageEmbed(photo_properties[0], photo_properties[2] , null, EmbedType.valueOf("IMAGE"), null, 250, null, null, null, null, new Footer(photo_properties[1], null, null), new ImageInfo(photo_properties[1], photo_properties[1], 500, 500), null);
+                        channel.sendMessage(embed).queue();
+                        // "This subreddit does not contain image-based posts"
                     }
                 }
 
@@ -198,16 +216,26 @@ public class Bot extends ListenerAdapter
                     {
                         String url = reddit.getGIFLink(args[1]);
                         channel.sendMessage(url).queue();
+                        statRecorder.incrementCount(command.replace(">",""));
                     }
+                }
+
+                else if (command.equals(">stat")) 
+                {
+                    statRecorder.incrementCount(command.replace(">",""));
+                    channel.sendMessage("This command has been requested " + statRecorder.getCount(args[1]) + " times since May 1 2020.").queue();
+
                 }
 
                 else if (command.equals(">search"))
                 {
                     channel.sendMessage(reddit.searchSubreddits(args[1])).queue();
+                    statRecorder.incrementCount(command.replace(">",""));
                 }
 
                 else if (command.equals(">joke"))
                 {
+                    statRecorder.incrementCount(command.replace(">",""));
                     String joke = DadJokes.generateDadJoke();
                     channel.sendMessage(joke).queue();
                     channel.sendMessage("hi");
@@ -215,42 +243,48 @@ public class Bot extends ListenerAdapter
 
                 else if (command.equals(">news"))
                 {
+                    statRecorder.incrementCount(command.replace(">",""));
                     String url = newsUpdates.retrieveURL(true);
                     channel.sendMessage(url).queue();
                 }
 
                 else if (command.equals(">news top"))
                 {
+                    statRecorder.incrementCount(command.replace(">",""));
                     String url = newsUpdates.retrieveURL(false);
                     channel.sendMessage(url).queue();
                 }
 
                 else if (command.equals(">about"))
                 {
+                    statRecorder.incrementCount(command.replace(">",""));
                     String url = "https://github.com/APM246/RedditContent-Discord-Bot";
                     channel.sendMessage(url).queue();
                 }
 
                 else if (command.equals(">play"))
                 {
+                    statRecorder.incrementCount(command.replace(">",""));
                     System.out.println(args.toString());
                     musicBot.loadAndPlay(event.getTextChannel(), musicBot.searchTermtoURL(args[1]));
                 }
 
                 else if (command.equals(">skip"))
                 {
+                    statRecorder.incrementCount(command.replace(">",""));
                     musicBot.skipTrack(event.getTextChannel());
                 }
 
                 else if (command.equals(">stop"))
                 {
+                    statRecorder.incrementCount(command.replace(">",""));
                     musicBot.kickBot();
                 }
             }
+        }
 
             catch (SubredditDoesNotExistException e)
             {
-                
                     String id = event.getAuthor().getDiscriminator();
 
                     if (id.equals("0998"))
@@ -260,17 +294,17 @@ public class Bot extends ListenerAdapter
 
                     else if (id.equals("6934"))
                     {
-                        channel.sendMessage("Do they teach spelling in Serbia?").queue();
+                        channel.sendMessage("You're an okay friend").queue();
                     }
 
                     else if (id.equals("4360"))
                     {
-                        channel.sendMessage("Shit at Rocket League and spelling").queue();
+                        channel.sendMessage("Learn how to aerial (and spell)").queue();
                     }
                     
                     else if (id.equals("0588"))
                     {
-                        channel.sendMessage("tEam fIgHt tAcTiCs").queue();
+                        channel.sendMessage("We get it u study business").queue();
                     }
 
                     else if (id.equals("2201"))
@@ -280,12 +314,12 @@ public class Bot extends ListenerAdapter
 
                     else if (id.equals("4469"))
                     {
-                        channel.sendMessage("lEaGuE oF lEgeNdS").queue();
+                        channel.sendMessage("Haydendelap").queue();
                     }
 
                     else if (id.equals("8389"))
                     {
-                        channel.sendMessage("You didn't spell r/iamgay right").queue();
+                        channel.sendMessage("You're shit at skribble and spelling").queue();
                     }
                     
                     else 
@@ -303,6 +337,5 @@ public class Bot extends ListenerAdapter
                 e.printStackTrace();
                 channel.sendMessage("```\nSomething went wrong.\n```").queue();
             }
-        }
     }
 }
