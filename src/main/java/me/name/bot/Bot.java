@@ -13,10 +13,14 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageEmbed.Footer;
 import net.dv8tion.jda.api.entities.MessageEmbed.ImageInfo;
+import net.dv8tion.jda.api.entities.MessageEmbed.VideoInfo;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.entities.Role;
 
 import javax.annotation.Nonnull;
+
+import java.awt.Color;
 import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
 
@@ -194,9 +198,15 @@ public class Bot extends ListenerAdapter
                         statRecorder.incrementCount(command.replace(">",""));
                         if (args[1].contains("raven")) statRecorder.incrementCount(args[1]);
                         String[] photo_properties = reddit.getPhotoLink(args[1]);
-                        MessageEmbed embed = new MessageEmbed(photo_properties[0], photo_properties[2] , null, EmbedType.valueOf("IMAGE"), null, 250, null, null, null, null, new Footer(photo_properties[1], null, null), new ImageInfo(photo_properties[1], photo_properties[1], 500, 500), null);
-                        channel.sendMessage(embed).queue();
-                        // "This subreddit does not contain image-based posts"
+                        if (photo_properties == null) channel.sendMessage("This subreddit does not contain image-based posts").queue();
+                        else 
+                        {
+                            String clickable_link = photo_properties[1]; 
+                            MessageEmbed embed = new MessageEmbed(clickable_link, photo_properties[2], null, EmbedType.valueOf("IMAGE"), null,
+                            25, null, null, null, null, null, new ImageInfo(photo_properties[0], photo_properties[0],
+                            MessageEmbed.EMBED_MAX_LENGTH_BOT, MessageEmbed.EMBED_MAX_LENGTH_BOT), null);
+                            channel.sendMessage(embed).queue();
+                        }
                     }
                 }
 
@@ -214,9 +224,16 @@ public class Bot extends ListenerAdapter
                     
                     else 
                     {
-                        String url = reddit.getGIFLink(args[1]);
-                        channel.sendMessage(url).queue();
+                        String[] gif_properties = reddit.getGIFLink(args[1]);
                         statRecorder.incrementCount(command.replace(">",""));
+                        if (gif_properties == null) channel.sendMessage("This subreddit does not contain gif-based posts").queue();
+                        else 
+                        {
+                            String clickable_link = gif_properties[1]; 
+                            MessageEmbed embed = new MessageEmbed(clickable_link, gif_properties[2], gif_properties[0], EmbedType.valueOf("UNKNOWN"), null,
+                            100, null, null, null, null, null, null, null);
+                            channel.sendMessage(embed).queue();
+                        }
                     }
                 }
 

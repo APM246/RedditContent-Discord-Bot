@@ -47,7 +47,7 @@ public class RedditComments
             for (Submission s : photo_list) {
                 if (!s.isSelfPost() && (s.getUrl().contains("i.imgur.com") || s.getUrl().contains("i.redd.it")))
                 {
-                    images.add(new String[] {s.getUrl(), "reddit.com" + s.getPermalink(), s.getTitle()});
+                    images.add(new String[] {s.getUrl(), "https://www.reddit.com/" + s.getPermalink(), s.getTitle()});
                 }
             }
 
@@ -62,12 +62,12 @@ public class RedditComments
         }
     }
 
-    public String getGIFLink(String subredditname) throws SubredditDoesNotExistException
+    public String[] getGIFLink(String subredditname) throws SubredditDoesNotExistException
     {
         try 
         {
             DefaultPaginator<Submission> posts = reddit.subreddit(subredditname).posts().build();
-            List<String> gifs = new ArrayList<String>();
+            List<String[]> gifs = new ArrayList<>();
             Listing<Submission> page = posts.next();
 
             // Throw error if subreddit name is wrong
@@ -75,19 +75,13 @@ public class RedditComments
 
             for (Submission s: page)
             {
-                if (!s.isSelfPost() && s.getUrl().contains("gfycat.com"))
+                if (!s.isSelfPost() && (s.getUrl().contains("gfycat.com") || s.getUrl().contains(".gifv")))
                 {
-                    gifs.add(s.getUrl());
-                }
-                else if (!s.isSelfPost() && s.getUrl().contains(".gifv"))
-                {
-                    gifs.add(s.getUrl());
+                    gifs.add(new String[] {s.getUrl(), "https://www.reddit.com/" + s.getPermalink(), s.getTitle()});
                 }
             }
-
-            //if s.isNsfw()
         
-            if (gifs.size() == 0) return "This subreddit does not contain gif-based posts";
+            if (gifs.size() == 0) return null;
             int random_number = (int) (gifs.size()*Math.random());
             return gifs.get(random_number);
         }
