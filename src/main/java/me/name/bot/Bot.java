@@ -55,7 +55,7 @@ public class Bot extends ListenerAdapter
 
     private static boolean isInappropriate(String redditName)
     {
-        String[] banned_list = {"gayporn","dick","demirosemawby","realscatgirls", "realscatguys", "IndiansGoneWild", "balls", "manass", "ttotm", "trap", "pooping", "sounding", "tgirls"};
+        String[] banned_list = {"gayporn","dick","demirosemawby","realscatgirls", "realscatguys", "IndiansGoneWild", "balls", "manass", "dilf", "ttotm", "trap", "pooping", "sounding", "tgirls"};
 
         for (String reddit: banned_list) 
         {
@@ -111,7 +111,7 @@ public class Bot extends ListenerAdapter
                     if (!isLocked) 
                     {
                         n_tries = 0;
-                        player = new Player(message.getChannel().getIdLong());
+                        player = new Player(message.getChannel().getIdLong(), message.getChannel().getName());
                         isLocked = true;
                         output = reddit.guessCity();
                         channel.sendMessage(output[0] + "\n" + "Try and guess the name of the city or country").queue();
@@ -119,7 +119,7 @@ public class Bot extends ListenerAdapter
 
                     }
 
-                    else channel.sendMessage("Game is being played in the " + channel.getName() + " channel").queue();
+                    else channel.sendMessage("Game is being played in the " + player.getChannelName() + " channel").queue();
                 }
 
                 else if (command.equals(">guess") && isLocked)
@@ -162,7 +162,7 @@ public class Bot extends ListenerAdapter
                         
                     }
 
-                    else channel.sendMessage("The game is not being played in this channel!");
+                    else channel.sendMessage("Game is being played in the " + player.getChannelName() + " channel").queue();
                 }
 
                 else if (command.equals(">quit") && isLocked)
@@ -173,6 +173,8 @@ public class Bot extends ListenerAdapter
                         player = null;
                         isLocked = false;
                     }
+
+                    else channel.sendMessage("Game is being played in the " + player.getChannelName() + " channel").queue();
                 }
 
                 else if (command.equals(">comment"))
@@ -227,13 +229,7 @@ public class Bot extends ListenerAdapter
                         String[] gif_properties = reddit.getGIFLink(args[1]);
                         statRecorder.incrementCount(command.replace(">",""));
                         if (gif_properties == null) channel.sendMessage("This subreddit does not contain gif-based posts").queue();
-                        else 
-                        {
-                            String clickable_link = gif_properties[1]; 
-                            MessageEmbed embed = new MessageEmbed(clickable_link, gif_properties[2], gif_properties[0], EmbedType.valueOf("UNKNOWN"), null,
-                            100, null, null, null, null, null, null, null);
-                            channel.sendMessage(embed).queue();
-                        }
+                        else channel.sendMessage(gif_properties[0]).queue();
                     }
                 }
 
