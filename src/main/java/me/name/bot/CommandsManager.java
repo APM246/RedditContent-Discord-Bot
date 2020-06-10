@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageEmbed.ImageInfo;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class CommandsManager {
     
@@ -23,6 +24,9 @@ public class CommandsManager {
     private StatsRecorder statRecorder;
     private String command;
     private String args;
+    private boolean isLocked = false;
+    private String[] output; 
+    private int n_tries;
 
     public CommandsManager(RedditComments reddit, NewsUpdates newsUpdates, Music musicBot) throws Exception 
     {
@@ -66,53 +70,114 @@ public class CommandsManager {
         return false;
     }
    
-    public void executeCommand(MessageChannel channel, String[] input) throws Exception
+    public void executeCommand(MessageChannel channel, String[] input, MessageReceivedEvent event) throws Exception
     {
         this.channel = channel;
         command = input[0];
         args = null;
         if (input.length > 1) args = input[1];
 
-        if (command.equals(">help")) {
-            help();
-        }
+        if (command.equals(">game")) game();
 
-        else if (command.equals(">update")) {
-            update();
-        }
+        else if (command.equals(">guess") && isLocked) guess();            
 
-        else if (command.equals(">comment")) {
-            comment();
-        }
+        else if (command.equals(">quit") && isLocked) quit();
 
-        else if (command.equals(">photo")) {
-            photo();
-        }
+        else if (command.equals(">help")) help();
 
-        else if (command.equals(">gif")) {
-            gif();
-        }
+        else if (command.equals(">update")) update();
 
-        else if (command.equals(">search")) {
-            search();
-        }
+        else if (command.equals(">comment")) comment();
+        
+        else if (command.equals(">photo")) photo();
+
+        else if (command.equals(">gif")) gif();
+
+        else if (command.equals(">search")) search();
 
         else if (command.equals(">news")) {
             if (args != null && args.contains("top")) newsTop();
             else news();
         }
 
-        else if (command.equals(">about")) {
-            about();
+        else if (command.equals(">about")) about();
+
+        else if (command.equals(">stat")) stat();
+
+        else if (command.equals(">joke")) joke();
+        
+        else if (command.equals("play")) play(event);
+        
+        else if (command.equals("skip[")) stop(event);
+
+        else skip(event);
+    }
+
+    private void game() throws Exception {
+        if (!isLocked) 
+        {
+            n_tries = 0;
+            player = new Player(channel.getIdLong(), channel.getName());
+            isLocked = true;
+            output = reddit.guessCity();
+            channel.sendMessage(output[0] + "\n" + "Try and guess the name of the city or country").queue();
+            statRecorder.incrementCount(command.replace(">",""));
         }
 
-        else if (command.equals(">stat")) {
-            stat();
+        else channel.sendMessage("Game is being played in the " + player.getChannelName() + " channel").queue();
+    }
+
+    private void guess() throws Exception {
+        if (channel.getIdLong() == player.getchannelID())
+                    {
+                        statRecorder.incrementCount(command.replace(">",""));
+                        String attempt = args.toLowerCase();
+                        attempt = attempt.replace("the", "");
+                        attempt = attempt.replace("city", "");
+                        attempt = attempt.replace("town", "");
+                        attempt = attempt.replace("river", "");
+
+                        for (String word: output[1].split(" "))
+                        {
+                            System.out.println("attempt: " + attempt);
+                            System.out.println("word: " + word);
+                            for (String attempt_word: attempt.split(" "))
+                            {                           
+                                if (attempt_word.equals(word))
+                                {
+                                    channel.sendMessage("Correct! (☞ ͡° ͜ʖ ͡°)☞").queue();
+                                    channel.sendMessage("The title of the post was: " + output[1]).queue();
+                                    player = null;
+                                    isLocked = false;
+                                    return;
+                                }
+                            }
+                        }
+            
+                        channel.sendMessage("Wrong (´･_･`)").queue();
+                        n_tries++;
+                        if (n_tries > 10) 
+                        {
+                            player = null;
+                            isLocked = false;
+                            channel.sendMessage("10 guesses are over (╯°□°)╯︵ ┻━┻").queue();
+                            channel.sendMessage("The title of the post was: " + output[1]).queue();
+                        }
+                        
+                    }
+
+                    else channel.sendMessage("Game is being played in the " + player.getChannelName() + " channel").queue();
+    }
+
+    private void quit() {
+        if (channel.getIdLong() == player.getchannelID())
+        {
+            channel.sendMessage("The title of the post was: " + output[1]).queue();
+            player = null;
+            isLocked = false;
         }
 
-        else if (command.equals(">joke")) {
-            joke();
-        }
+        else channel.sendMessage("Game is being played in the " + player.getChannelName() + " channel").queue();
     }
 
     private void stat() throws Exception {
@@ -213,6 +278,21 @@ public class CommandsManager {
         String url = newsUpdates.retrieveURL(false);
         channel.sendMessage(url).queue();
     }
-                
+     
+    private void play(MessageReceivedEvent event) {
+        statRecorder.incrementCount(command.replace(">",""));
+        System.out.println(args.toString());
+        musicBot.loadAndPlay(event.getTextChannel(), musicBot.searchTermtoURL(args[1]));
+    }
+
+    private void skip(MessageReceivedEvent event) throws Exception {
+        statRecorder.incrementCount(command.replace(">",""));
+        musicBot.skipTrack(event.getTextChannel());
+    }
+
+    private void stop(MessageReceivedEvent event) throws Exception {
+        statRecorder.incrementCount(command.replace(">",""));
+        musicBot.kickBot();
+    }
 
 }
