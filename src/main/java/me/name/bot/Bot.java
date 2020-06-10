@@ -41,12 +41,12 @@ public class Bot extends ListenerAdapter
 
         try 
         { 
-            commandsManager.executeCommand(channel, args, event);
+            if (args[0].charAt(0) == '>') commandsManager.executeCommand(channel, args, event);
         }
 
         catch (SubredditDoesNotExistException e)
         {
-            String id = event.getAuthor().getDiscriminator();
+            /*String id = event.getAuthor().getDiscriminator();
 
             if (id.equals("0998"))
             {
@@ -81,16 +81,13 @@ public class Bot extends ListenerAdapter
             else if (id.equals("8389"))
             {
                 channel.sendMessage("You're shit at skribble and spelling").queue();
-            }
+            }*/
                     
-            else 
-            {
-                String[] error_messages = {"Wrong spelling", "PLEASE learn how to spell", "Incorrectly spelt u cunt", "You spelt it wrong idiot",
-                "Do you know how to use a keyboard?", "You didn't spell that right :/", "Hayden ur so shit at spelling",
-                "Fuck off with that shit spelling", "Try again with the spelling"};
-                int random_number = (int) (Math.random()*error_messages.length);
-                channel.sendMessage(error_messages[random_number]).queue();
-            }
+            
+            String[] error_messages = {"wnfnufnwrugrw SPELL CORRECTLY sdftgdsg", "spelling isn't that hard", "learn the art of spelling"};
+            int random_number = (int) (Math.random()*error_messages.length);
+            channel.sendMessage(event.getAuthor().getAsMention() + " " + error_messages[random_number]).queue();
+                
         }
 
         catch (Exception e)

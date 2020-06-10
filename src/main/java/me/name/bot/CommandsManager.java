@@ -279,10 +279,10 @@ public class CommandsManager {
         channel.sendMessage(url).queue();
     }
      
-    private void play(MessageReceivedEvent event) {
+    private void play(MessageReceivedEvent event) throws Exception {
         statRecorder.incrementCount(command.replace(">",""));
         System.out.println(args.toString());
-        musicBot.loadAndPlay(event.getTextChannel(), musicBot.searchTermtoURL(args[1]));
+        musicBot.loadAndPlay(event.getTextChannel(), musicBot.searchTermtoURL(args));
     }
 
     private void skip(MessageReceivedEvent event) throws Exception {
