@@ -11,16 +11,12 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.MessageEmbed.Footer;
 import net.dv8tion.jda.api.entities.MessageEmbed.ImageInfo;
-import net.dv8tion.jda.api.entities.MessageEmbed.VideoInfo;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.entities.Role;
 
 import javax.annotation.Nonnull;
 
-import java.awt.Color;
 import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
 
@@ -33,44 +29,17 @@ public class Bot extends ListenerAdapter
     private Player player;
     private String[] output; 
     private int n_tries;
+    private StatsRecorder statRecorder;
+    private CommandsManager commandsManager;
 
-    private static String read_file(String fileName)
+    public Bot() throws Exception
     {
-        String message = "";
-
-        try
-        {
-            ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-            InputStream inputStream = classloader.getResourceAsStream(fileName);
-            String encoding = null;
-            message = IOUtils.toString(inputStream, encoding);
-        }
-        catch (Exception e) 
-        {
-            e.printStackTrace();
-        }
-
-        return message;
-    }
-
-    private static boolean isInappropriate(String redditName)
-    {
-        String[] banned_list = {"gayporn","dick","demirosemawby","realscatgirls", "realscatguys", "IndiansGoneWild", "balls", "manass", "dilf", "ttotm", "trap", "pooping", "sounding", "tgirls"};
-
-        for (String reddit: banned_list) 
-        {
-            if (redditName.equals(reddit)) 
-            {
-                return true;
-            }
-        }
-
-        return false;
+        statRecorder = new StatsRecorder();
+        commandsManager = new CommandsManager(new RedditComments(), new NewsUpdates(), new Music());
     }
 
     public static void main(String[] args) throws Exception
     {
-        //System.out.println(read_md());
         new JDABuilder(ConfigReader.retrieveBotToken()).addEventListeners(new Bot()).
                 setActivity(Activity.playing("type >help")).build();
     }
@@ -86,24 +55,8 @@ public class Bot extends ListenerAdapter
         MessageChannel channel = event.getChannel();
         String command = args[0];
 
-        try {
-            StatsRecorder statRecorder = new StatsRecorder(); 
-        if (command.equals(">help"))
-        {
-            channel.sendMessage(read_file("help.txt")).queue();
-            statRecorder.incrementCount(command.replace(">",""));
-        }
-
-        else if (command.equals(">update"))
-        {
-            channel.sendMessage(read_file("update.txt")).queue();
-            statRecorder.incrementCount(command.replace(">",""));
-        }
-
-        else 
-        {
-                RedditComments reddit = new RedditComments();
-                NewsUpdates newsUpdates = new NewsUpdates();
+        try { 
+                commandsManager.executeCommand(channel, args);
                 Music musicBot = new Music();
 
                 if (command.equals(">game"))
@@ -113,6 +66,8 @@ public class Bot extends ListenerAdapter
                         n_tries = 0;
                         player = new Player(message.getChannel().getIdLong(), message.getChannel().getName());
                         isLocked = true;
+                        // REMOVE 
+                        RedditComments reddit = new RedditComments();
                         output = reddit.guessCity();
                         channel.sendMessage(output[0] + "\n" + "Try and guess the name of the city or country").queue();
                         statRecorder.incrementCount(command.replace(">",""));
@@ -177,104 +132,6 @@ public class Bot extends ListenerAdapter
                     else channel.sendMessage("Game is being played in the " + player.getChannelName() + " channel").queue();
                 }
 
-                else if (command.equals(">comment"))
-                {
-                    String reddit_message = reddit.findComment(args[1]);
-                    channel.sendMessage(reddit_message).queue();
-                    statRecorder.incrementCount(command.replace(">",""));
-                }
-                else if (command.equals(">photo"))
-                {
-                    if (isInappropriate(args[1]))
-                    {
-                        String special_message = 
-                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?" + 
-                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?" + 
-                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?" + 
-                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?";
-                        channel.sendMessage(special_message).queue();
-                    }
-
-                    else 
-                    {
-                        statRecorder.incrementCount(command.replace(">",""));
-                        if (args[1].contains("raven")) statRecorder.incrementCount(args[1]);
-                        String[] photo_properties = reddit.getPhotoLink(args[1]);
-                        if (photo_properties == null) channel.sendMessage("This subreddit does not contain image-based posts").queue();
-                        else 
-                        {
-                            String clickable_link = photo_properties[1]; 
-                            MessageEmbed embed = new MessageEmbed(clickable_link, photo_properties[2], null, EmbedType.valueOf("IMAGE"), null,
-                            25, null, null, null, null, null, new ImageInfo(photo_properties[0], photo_properties[0],
-                            MessageEmbed.EMBED_MAX_LENGTH_BOT, MessageEmbed.EMBED_MAX_LENGTH_BOT), null);
-                            channel.sendMessage(embed).queue();
-                        }
-                    }
-                }
-
-                else if (command.equals(">gif"))
-                {
-                    if (isInappropriate(args[1]))
-                    {
-                        String special_message = 
-                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?" + 
-                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?" + 
-                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?" + 
-                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?";
-                        channel.sendMessage(special_message).queue();
-                    }   
-                    
-                    else 
-                    {
-                        String[] gif_properties = reddit.getGIFLink(args[1]);
-                        statRecorder.incrementCount(command.replace(">",""));
-                        if (gif_properties == null) channel.sendMessage("This subreddit does not contain gif-based posts").queue();
-                        else channel.sendMessage(gif_properties[0]).queue();
-                    }
-                }
-
-                else if (command.equals(">stat")) 
-                {
-                    statRecorder.incrementCount(command.replace(">",""));
-                    channel.sendMessage("This command has been requested " + statRecorder.getCount(args[1]) + " times since May 1 2020.").queue();
-
-                }
-
-                else if (command.equals(">search"))
-                {
-                    channel.sendMessage(reddit.searchSubreddits(args[1])).queue();
-                    statRecorder.incrementCount(command.replace(">",""));
-                }
-
-                else if (command.equals(">joke"))
-                {
-                    statRecorder.incrementCount(command.replace(">",""));
-                    String joke = DadJokes.generateDadJoke();
-                    channel.sendMessage(joke).queue();
-                    channel.sendMessage("hi");
-                }
-
-                else if (command.equals(">news"))
-                {
-                    statRecorder.incrementCount(command.replace(">",""));
-                    String url = newsUpdates.retrieveURL(true);
-                    channel.sendMessage(url).queue();
-                }
-
-                else if (command.equals(">news top"))
-                {
-                    statRecorder.incrementCount(command.replace(">",""));
-                    String url = newsUpdates.retrieveURL(false);
-                    channel.sendMessage(url).queue();
-                }
-
-                else if (command.equals(">about"))
-                {
-                    statRecorder.incrementCount(command.replace(">",""));
-                    String url = "https://github.com/APM246/RedditContent-Discord-Bot";
-                    channel.sendMessage(url).queue();
-                }
-
                 else if (command.equals(">play"))
                 {
                     statRecorder.incrementCount(command.replace(">",""));
@@ -294,7 +151,6 @@ public class Bot extends ListenerAdapter
                     musicBot.kickBot();
                 }
             }
-        }
 
             catch (SubredditDoesNotExistException e)
             {
