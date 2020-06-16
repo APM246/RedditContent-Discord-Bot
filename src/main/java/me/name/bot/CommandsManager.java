@@ -13,9 +13,11 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageEmbed.ImageInfo;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import java.util.Random;
 
 public class CommandsManager {
     
+    final private Random random;
     final private RedditComments reddit;
     final private NewsUpdates newsUpdates;
     final private Music musicBot;
@@ -30,11 +32,33 @@ public class CommandsManager {
 
     public CommandsManager(RedditComments reddit, NewsUpdates newsUpdates, Music musicBot) throws Exception 
     {
+        random = new Random();
         this.reddit = reddit;
         this.newsUpdates = newsUpdates;
         this.musicBot = musicBot;
         statRecorder = new StatsRecorder();
     }
+
+    public void memeify(String message, MessageChannel channel) 
+    {
+        String modified = "";
+        String letter;
+        for (int i = 0; i < message.length(); i++) {
+            if (i % 2 == 0) letter = message.substring(i, i+1).toUpperCase();
+            else letter = message.substring(i, i+1);
+
+            modified += letter;
+        }
+
+        channel.sendMessage(modified).queue();
+    }
+
+    public boolean shouldMeme() 
+    {
+        if (random.nextInt(100) < 10) return true;
+        else return false;
+    }
+
 
     private static String read_file(String fileName)
     {
@@ -106,11 +130,11 @@ public class CommandsManager {
 
         else if (command.equals(">joke")) joke();
         
-        else if (command.equals("play")) play(event);
+        else if (command.equals(">play")) play(event);
         
-        else if (command.equals("skip[")) stop(event);
+        else if (command.equals(">stop")) stop(event);
 
-        else skip(event);
+        else if (command.equals(">skip")) skip(event);
     }
 
     private void game() throws Exception {
@@ -295,4 +319,7 @@ public class CommandsManager {
         musicBot.kickBot();
     }
 
+    public void copyPasta() {
+        
+    }
 }
