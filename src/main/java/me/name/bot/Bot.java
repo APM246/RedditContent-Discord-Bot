@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import javax.annotation.Nonnull;
-import me.name.RedditComments;
+import me.name.Reddit;
 
 public class Bot extends ListenerAdapter
 {
@@ -22,7 +22,7 @@ public class Bot extends ListenerAdapter
 
     public Bot() throws Exception
     {
-        commandsManager = new CommandsManager(new RedditComments(), new NewsUpdates(), new Music());
+        commandsManager = new CommandsManager(new Reddit(), new NewsUpdates(), new Music());
         isJDASet = false;
     }
 
@@ -36,7 +36,7 @@ public class Bot extends ListenerAdapter
     public void onMessageReceived(@Nonnull MessageReceivedEvent event)
     {
         if (!isJDASet) {
-            error_channel = event.getJDA().getTextChannelById("722452562342838275");
+            error_channel = event.getJDA().getTextChannelById("663249547765743636");
             isJDASet = true;
         }
         if (event.getAuthor().isBot()) return; // don't respond to bots (including self)

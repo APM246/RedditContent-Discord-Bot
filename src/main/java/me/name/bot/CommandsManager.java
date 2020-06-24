@@ -6,7 +6,7 @@ import org.apache.commons.io.IOUtils;
 
 import me.name.DadJokes;
 import me.name.NewsUpdates;
-import me.name.RedditComments;
+import me.name.Reddit;
 import me.name.music.Music;
 import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -18,7 +18,7 @@ import java.util.Random;
 public class CommandsManager {
     
     final private Random random;
-    final private RedditComments reddit;
+    final private Reddit reddit;
     final private NewsUpdates newsUpdates;
     final private Music musicBot;
     private Player player;
@@ -30,7 +30,7 @@ public class CommandsManager {
     private String[] output; 
     private int n_tries;
 
-    public CommandsManager(RedditComments reddit, NewsUpdates newsUpdates, Music musicBot) throws Exception 
+    public CommandsManager(Reddit reddit, NewsUpdates newsUpdates, Music musicBot) throws Exception 
     {
         random = new Random();
         this.reddit = reddit;
@@ -118,6 +118,8 @@ public class CommandsManager {
         else if (command.equals(">gif")) gif();
 
         else if (command.equals(">search")) search();
+
+        else if (command.equals(">post")) post();
 
         else if (command.equals(">news")) {
             if (args != null && args.contains("top")) newsTop();
@@ -233,7 +235,7 @@ public class CommandsManager {
     }
 
     private void comment() throws Exception {
-        String reddit_message = reddit.findComment(args);
+        String reddit_message = reddit.getComment(args);
         channel.sendMessage(reddit_message).queue();
         statRecorder.incrementCount(command.replace(">",""));
     }
@@ -319,7 +321,13 @@ public class CommandsManager {
         musicBot.kickBot();
     }
 
-    public void copyPasta() {
+    private void post() throws Exception {
+        String message = reddit.getBody(args);
+        channel.sendMessage(message).queue();
+        statRecorder.incrementCount(command.replace(">",""));
+    }
+
+    private void copyPasta() {
         
     }
 }

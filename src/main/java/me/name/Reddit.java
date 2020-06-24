@@ -18,14 +18,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class RedditComments
+public class Reddit
 {
     private UserAgent userAgent;
     private Credentials credentials;
     private NetworkAdapter adapter;
     private RedditClient reddit;
 
-    public RedditComments()
+    public Reddit()
     {
         userAgent = new UserAgent("desktop", "net.dean.awesomescript", "v0.1", "APM369");
         credentials = Credentials.script("APM369", "lordarun", "VBouI4DFgiC2Mw", "5OzSdoDKXPSw2K1F2x95zSWNg84");
@@ -93,7 +93,7 @@ public class RedditComments
     }
 
 
-    public String findComment(String subredditName) throws SubredditDoesNotExistException
+    public String getComment(String subredditName) throws SubredditDoesNotExistException
     {
         try
         {
@@ -160,12 +160,41 @@ public class RedditComments
         catch (Exception e) {return null;}
     }
 
+    public String getBody(String searchwords) throws SubredditDoesNotExistException {
+        try 
+        {
+            DefaultPaginator<Submission> posts = reddit.subreddit(searchwords).posts().build();
+            List<String> bodies = new ArrayList<>();
+            Listing<Submission> posts_list = posts.next();
+
+            // Throw error if subreddit does not exist
+            if (posts_list.isEmpty()) throw new SubredditDoesNotExistException();
+
+            for (Submission s : posts_list) {
+                    if (s.isSelfPost()) {
+                        
+                        bodies.add("**" + s.getTitle() + "**" + "\n\n" + s.getSelfText());
+                    }
+            }
+
+            if (bodies.size() == 0) return null;
+            int random_number = (int) (bodies.size()*Math.random());
+            return bodies.get(random_number);
+        }
+
+        catch (Exception e)
+        {
+            throw new SubredditDoesNotExistException();
+        }
+    } 
+
     public static void main(String[] args) throws Exception
     {
-        RedditComments main = new RedditComments();
+        Reddit main = new Reddit();
         //System.out.println(main.findComment("pcmasterrace"));
         //System.out.println(main.getPhotoLink("earthporn"));
         //System.out.println(main.searchSubreddits("nvidia 2070"));
-        System.out.println(Arrays.toString(main.guessCity()));
+        //System.out.println(Arrays.toString(main.guessCity()));
+        //System.out.println(main.getBody("truegaming").toString());
     }
 }
