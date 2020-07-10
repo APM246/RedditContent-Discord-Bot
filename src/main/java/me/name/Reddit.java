@@ -15,7 +15,6 @@ import net.dean.jraw.pagination.Paginator;
 import net.dean.jraw.references.SubredditReference;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Reddit
@@ -33,27 +32,40 @@ public class Reddit
         reddit = OAuthHelper.automatic(adapter, credentials);
     }
 
-    public String[] getPhotoLink(String subredditName) throws SubredditDoesNotExistException
+    public String[] getPost(String subredditName) throws SubredditDoesNotExistException
     {
         try 
         {
             DefaultPaginator<Submission> posts = reddit.subreddit(subredditName).posts().build();
-            List<String[]> images = new ArrayList<>();
-            Listing<Submission> photo_list = posts.next();
+            List<String[]> content = new ArrayList<>();
+            Listing<Submission> list_of_posts = posts.next();
 
             // Throw error if subreddit does not exist
-            if (photo_list.isEmpty()) throw new SubredditDoesNotExistException();
+            if (list_of_posts.isEmpty()) throw new SubredditDoesNotExistException();
 
-            for (Submission s : photo_list) {
-                if (!s.isSelfPost() && (s.getUrl().contains("i.imgur.com") || s.getUrl().contains("i.redd.it")))
+            for (Submission s : list_of_posts) {
+                if (!s.isSelfPost()) 
                 {
-                    images.add(new String[] {s.getUrl(), "https://www.reddit.com/" + s.getPermalink(), s.getTitle()});
+                    if (s.getUrl().contains("i.imgur.com") || s.getUrl().contains("i.redd.it"))
+                    {
+                        content.add(new String[] {s.getUrl(), "https://www.reddit.com/" + s.getPermalink(), s.getTitle(), "photo"});
+                    }
+
+                    else if (s.getUrl().contains("gfycat.com") || s.getUrl().contains(".gifv")) 
+                    {
+                        content.add(new String[] {s.getUrl(), "gif"});  
+                    }
+                }
+
+                else
+                {
+                    content.add(new String[] {"**" + s.getTitle() + "**" + "\n\n" + s.getSelfText(), "text"});
                 }
             }
 
-            if (images.size() == 0) return null;
-            int random_number = (int) (images.size()*Math.random());
-            return images.get(random_number);
+            if (content.size() == 0) return null;
+            int random_number = (int) (content.size()*Math.random());
+            return content.get(random_number);
         }
 
         catch (Exception e)
@@ -61,37 +73,6 @@ public class Reddit
             throw new SubredditDoesNotExistException();
         }
     }
-
-    public String[] getGIFLink(String subredditname) throws SubredditDoesNotExistException
-    {
-        try 
-        {
-            DefaultPaginator<Submission> posts = reddit.subreddit(subredditname).posts().build();
-            List<String[]> gifs = new ArrayList<>();
-            Listing<Submission> page = posts.next();
-
-            // Throw error if subreddit name is wrong
-            if (page.isEmpty()) throw new SubredditDoesNotExistException();
-
-            for (Submission s: page)
-            {
-                if (!s.isSelfPost() && (s.getUrl().contains("gfycat.com") || s.getUrl().contains(".gifv")))
-                {
-                    gifs.add(new String[] {s.getUrl(), "https://www.reddit.com/" + s.getPermalink(), s.getTitle()});
-                }
-            }
-        
-            if (gifs.size() == 0) return null;
-            int random_number = (int) (gifs.size()*Math.random());
-            return gifs.get(random_number);
-        }
-
-        catch (Exception e)
-        {
-            throw new SubredditDoesNotExistException();
-        }
-    }
-
 
     public String getComment(String subredditName) throws SubredditDoesNotExistException
     {
@@ -160,41 +141,11 @@ public class Reddit
         catch (Exception e) {return null;}
     }
 
-    public String getBody(String searchwords) throws SubredditDoesNotExistException {
-        try 
-        {
-            DefaultPaginator<Submission> posts = reddit.subreddit(searchwords).posts().build();
-            List<String> bodies = new ArrayList<>();
-            Listing<Submission> posts_list = posts.next();
-
-            // Throw error if subreddit does not exist
-            if (posts_list.isEmpty()) throw new SubredditDoesNotExistException();
-
-            for (Submission s : posts_list) {
-                    if (s.isSelfPost()) {
-                        
-                        bodies.add("**" + s.getTitle() + "**" + "\n\n" + s.getSelfText());
-                    }
-            }
-
-            if (bodies.size() == 0) return null;
-            int random_number = (int) (bodies.size()*Math.random());
-            return bodies.get(random_number);
-        }
-
-        catch (Exception e)
-        {
-            throw new SubredditDoesNotExistException();
-        }
-    } 
-
     public static void main(String[] args) throws Exception
     {
         Reddit main = new Reddit();
         //System.out.println(main.findComment("pcmasterrace"));
-        //System.out.println(main.getPhotoLink("earthporn"));
-        //System.out.println(main.searchSubreddits("nvidia 2070"));
         //System.out.println(Arrays.toString(main.guessCity()));
-        //System.out.println(main.getBody("truegaming").toString());
+        System.out.println(main.getPost("truegaming").toString());
     }
 }

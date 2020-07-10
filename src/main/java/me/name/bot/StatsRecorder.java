@@ -33,6 +33,7 @@ public class StatsRecorder {
         commandMap.put("play",13);
         commandMap.put("skip",14);
         commandMap.put("stop",15);
+        commandMap.put("post", 16);
     }
 
     private void readJSON() throws Exception {

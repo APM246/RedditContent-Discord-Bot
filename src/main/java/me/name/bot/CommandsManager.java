@@ -113,9 +113,9 @@ public class CommandsManager {
 
         else if (command.equals(">comment")) comment();
         
-        else if (command.equals(">photo")) photo();
+        else if (command.equals(">photo")) deprecated_message();
 
-        else if (command.equals(">gif")) gif();
+        else if (command.equals(">gif")) deprecated_message();
 
         else if (command.equals(">search")) search();
 
@@ -240,7 +240,11 @@ public class CommandsManager {
         statRecorder.incrementCount(command.replace(">",""));
     }
 
-    private void photo() throws Exception {
+    private void deprecated_message() {
+        channel.sendMessage("This command has been deprecated, use >post [subreddit name] instead!");
+    }
+
+    private void photo(String[] photo_properties) throws Exception {
         if (isInappropriate(args))
             {
                 String special_message = 
@@ -255,7 +259,6 @@ public class CommandsManager {
         {
             statRecorder.incrementCount(command.replace(">",""));
             if (args.contains("raven")) statRecorder.incrementCount(args);
-            String[] photo_properties = reddit.getPhotoLink(args);
             if (photo_properties == null) channel.sendMessage("This subreddit does not contain image-based posts").queue();
             else 
                 {
@@ -268,7 +271,7 @@ public class CommandsManager {
         }
     }
 
-    private void gif() throws Exception {
+    private void gif(String[] gif_properties) throws Exception {
         if (isInappropriate(args))
         {
             String special_message = 
@@ -281,7 +284,6 @@ public class CommandsManager {
                     
         else 
         {
-            String[] gif_properties = reddit.getGIFLink(args);
             statRecorder.incrementCount(command.replace(">",""));
             if (gif_properties == null) channel.sendMessage("This subreddit does not contain gif-based posts").queue();
             else channel.sendMessage(gif_properties[0]).queue();
@@ -322,8 +324,10 @@ public class CommandsManager {
     }
 
     private void post() throws Exception {
-        String message = reddit.getBody(args);
-        channel.sendMessage(message).queue();
+        String[] content = reddit.getPost(args);
+        if (content[content.length - 1].equals("photo")) photo(content);
+        else if (content[content.length - 1].equals("gif")) gif(content);
+        else channel.sendMessage(content[0]).queue(); // self-post
         statRecorder.incrementCount(command.replace(">",""));
     }
 
