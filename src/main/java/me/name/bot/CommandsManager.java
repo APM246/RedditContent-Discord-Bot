@@ -81,7 +81,7 @@ public class CommandsManager {
 
     private static boolean isInappropriate(String redditName)
     {
-        String[] banned_list = {"dadsgonewild", "menkissing", "gayporn","dick","demirosemawby","realscatgirls", "realscatguys", "IndiansGoneWild", "balls", "manass", "dilf", "ttotm", "trap", "pooping", "sounding", "tgirls"};
+        String[] banned_list = {"VaginasRus", "ebonycameltoe", "tgirl", "dadsgonewild", "menkissing", "gayporn","dick","demirosemawby","realscatgirls", "realscatguys", "IndiansGoneWild", "balls", "manass", "dilf", "ttotm", "trap", "pooping", "sounding", "tgirls"};
 
         for (String reddit: banned_list) 
         {
@@ -241,7 +241,7 @@ public class CommandsManager {
     }
 
     private void deprecated_message() {
-        channel.sendMessage("This command has been deprecated, use >post [subreddit name] instead!");
+        channel.sendMessage("This command has been deprecated, use >post [subreddit name] instead!").queue();
     }
 
     private void photo(String[] photo_properties) throws Exception {

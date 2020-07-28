@@ -46,14 +46,14 @@ public class Reddit
             for (Submission s : list_of_posts) {
                 if (!s.isSelfPost()) 
                 {
-                    if (s.getUrl().contains("i.imgur.com") || s.getUrl().contains("i.redd.it"))
-                    {
-                        content.add(new String[] {s.getUrl(), "https://www.reddit.com/" + s.getPermalink(), s.getTitle(), "photo"});
-                    }
-
-                    else if (s.getUrl().contains("gfycat.com") || s.getUrl().contains(".gifv")) 
+                    if (s.getUrl().contains("gfycat.com") || s.getUrl().contains(".gifv")) 
                     {
                         content.add(new String[] {s.getUrl(), "gif"});  
+                    }
+
+                    else if (s.getUrl().contains("i.imgur.com") || s.getUrl().contains("i.redd.it"))
+                    {
+                        content.add(new String[] {s.getUrl(), "https://www.reddit.com/" + s.getPermalink(), s.getTitle(), "photo"});
                     }
                 }
 
@@ -146,6 +146,6 @@ public class Reddit
         Reddit main = new Reddit();
         //System.out.println(main.findComment("pcmasterrace"));
         //System.out.println(Arrays.toString(main.guessCity()));
-        System.out.println(main.getPost("truegaming").toString());
+        System.out.println(main.getPost("NSFW_GIF")[0].toString());
     }
 }
