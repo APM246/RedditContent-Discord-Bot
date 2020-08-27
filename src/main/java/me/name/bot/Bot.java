@@ -50,7 +50,7 @@ public class Bot extends ListenerAdapter
         try 
         { 
             if (args[0].charAt(0) == '>') commandsManager.executeCommand(channel, args, event);
-            else if (commandsManager.shouldMeme()) commandsManager.memeify(content, channel);
+            else if (commandsManager.shouldMeme(content)) commandsManager.memeify(content, channel);
         }
 
         catch (SubredditDoesNotExistException e)

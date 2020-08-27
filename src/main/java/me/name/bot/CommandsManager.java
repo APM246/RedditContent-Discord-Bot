@@ -53,9 +53,10 @@ public class CommandsManager {
         channel.sendMessage(modified).queue();
     }
 
-    public boolean shouldMeme() 
+    public boolean shouldMeme(String message) 
     {
-        if (random.nextInt(100) < 10) return true;
+        if (message.contains("https") || message.charAt(0) == '-') return false;
+        else if (random.nextInt(100) < 10) return true;
         else return false;
     }
 

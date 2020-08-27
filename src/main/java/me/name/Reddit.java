@@ -57,10 +57,7 @@ public class Reddit
                     }
                 }
 
-                else
-                {
-                    content.add(new String[] {"**" + s.getTitle() + "**" + "\n\n" + s.getSelfText(), "text"});
-                }
+                else content.add(new String[] {"**" + s.getTitle() + "**" + "\n\n" + s.getSelfText(), "text"});
             }
 
             if (content.size() == 0) return null;
@@ -102,7 +99,7 @@ public class Reddit
             List<SubredditSearchResult> list = reddit.searchSubredditsByName(searchwords);
             if (list.isEmpty()) throw new SubredditDoesNotExistException();
 
-            String result= "";
+            String result= "The following subreddits were found:";
 
             for (SubredditSearchResult subreddit: list)
             {
