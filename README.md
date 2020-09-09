@@ -10,13 +10,18 @@ Meta Commands:
 - \>help
 - \>about
 = \>update
+- \>stat \[command]
 
 Reddit Commands:
 
 - \>comment \[subreddit name]
-- \>photo \[subreddit name]
-- \>gif \[subreddit name]
+- \>post \[subreddit name]
 - \>search [search terms]
+
+Guess the City game:
+- \>game
+- \>guess \[answer]
+- \>quit
 
 Music Commands:
 - \>play \[Name of Youtube video]
@@ -29,6 +34,5 @@ Misc:
 More commands planned
 
 ## Hosting
-The bot is currently being hosted on a free Amazon Web Service EC2 Ubuntu-16.04 instance. Inquiries can be sent 
-to apm0366@gmail.com
+The bot is currently being hosted on a free Amazon Web Service EC2 Ubuntu-16.04 instance.
 
