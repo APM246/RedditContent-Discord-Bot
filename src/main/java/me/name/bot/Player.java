@@ -1,5 +1,8 @@
 package me.name.bot;
 
+/**
+ * could make this into a private inner class
+ */
 public class Player 
 {
     private long channelID;

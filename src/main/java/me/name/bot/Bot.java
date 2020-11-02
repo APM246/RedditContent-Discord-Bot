@@ -6,11 +6,14 @@ import me.name.exceptions.SubredditDoesNotExistException;
 import me.name.music.Music;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+
 import javax.annotation.Nonnull;
 import me.name.Reddit;
 
@@ -28,27 +31,28 @@ public class Bot extends ListenerAdapter
 
     public static void main(String[] args) throws Exception
     {
-        new JDABuilder(ConfigReader.retrieveBotToken()).addEventListeners(new Bot()).
-                setActivity(Activity.playing("type >help")).build();
+        JDABuilder.createLight(ConfigReader.retrieveBotToken(), GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS).
+        addEventListeners(new Bot()).setActivity(Activity.playing("type >help")).build();       
     }
 
     @Override
     public void onMessageReceived(@Nonnull MessageReceivedEvent event)
     {
-        if (!isJDASet) {
-            error_channel = event.getJDA().getTextChannelById("663249547765743636");
-            isJDASet = true;
-        }
-        if (event.getAuthor().isBot()) return; // don't respond to bots (including self)
-        Message message = event.getMessage();
-        if (message.getAuthor().isBot() || message.getType() != MessageType.DEFAULT) return;
-        String content = message.getContentRaw();
-        if (content.length() == 0) return;
-        String[] args = content.split(" ", 2);
         MessageChannel channel = event.getChannel();
 
         try 
-        { 
+        {
+            if (!isJDASet) {
+                error_channel = event.getJDA().getTextChannelById("663249547765743636");
+                isJDASet = true;
+            }
+            if (event.getAuthor().isBot()) return; // don't respond to bots (including self)
+            Message message = event.getMessage();
+            if (message.getAuthor().isBot() || message.getType() != MessageType.DEFAULT) return;
+            String content = message.getContentRaw();
+            if (content.length() == 0) return;
+            String[] args = content.split(" ", 2);
+ 
             if (args[0].charAt(0) == '>') commandsManager.executeCommand(channel, args, event);
             else if (commandsManager.shouldMeme(content)) commandsManager.memeify(content, channel);
         }
@@ -62,7 +66,8 @@ public class Bot extends ListenerAdapter
 
         catch (Exception e)
         {
-            error_channel.sendMessage(e.getMessage()).queue();
+            if (e.getMessage() != null) error_channel.sendMessage(e.getMessage()).queue();
+            else error_channel.sendMessage("Unknown error").queue();
         }
     }
 }
