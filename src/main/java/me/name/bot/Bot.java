@@ -1,12 +1,11 @@
 package me.name.bot;
 
-import me.name.ConfigReader;
+import me.name.Reader;
 import me.name.NewsUpdates;
 import me.name.exceptions.SubredditDoesNotExistException;
 import me.name.music.Music;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageType;
@@ -31,7 +30,7 @@ public class Bot extends ListenerAdapter
 
     public static void main(String[] args) throws Exception
     {
-        JDABuilder.createLight(ConfigReader.retrieveBotToken(), GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS).
+        JDABuilder.createLight(Reader.retrieveBotToken(), GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS).
         addEventListeners(new Bot()).setActivity(Activity.playing("type >help")).build();       
     }
 

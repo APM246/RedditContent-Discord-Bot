@@ -4,6 +4,7 @@ import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 
+import me.name.Reader;
 import me.name.DadJokes;
 import me.name.NewsUpdates;
 import me.name.Reddit;
@@ -29,6 +30,7 @@ public class CommandsManager {
     private boolean isLocked = false;
     private String[] output; 
     private int n_tries;
+    private static String[] banned_list;
 
     public CommandsManager(Reddit reddit, NewsUpdates newsUpdates, Music musicBot) throws Exception 
     {
@@ -37,6 +39,7 @@ public class CommandsManager {
         this.newsUpdates = newsUpdates;
         this.musicBot = musicBot;
         statRecorder = new StatsRecorder();
+        banned_list = Reader.retrieveBannedSubReddits();
     }
 
     public void memeify(String message, MessageChannel channel) 
@@ -82,14 +85,9 @@ public class CommandsManager {
 
     private static boolean isInappropriate(String redditName)
     {
-        String[] banned_list = {"VaginasRus", "ebonycameltoe", "tgirl", "dadsgonewild", "menkissing", "gayporn","dick","demirosemawby","realscatgirls", "realscatguys", "IndiansGoneWild", "balls", "manass", "dilf", "ttotm", "trap", "pooping", "sounding", "tgirls"};
-
         for (String reddit: banned_list) 
         {
-            if (redditName.equals(reddit)) 
-            {
-                return true;
-            }
+            if (redditName.equals(reddit)) return true;
         }
 
         return false;
@@ -325,6 +323,7 @@ public class CommandsManager {
     }
 
     private void post() throws Exception {
+        // create a class to hold the properties rather than a heterogeneous array?
         String[] content = reddit.getPost(args);
         if (content[content.length - 1].equals("photo")) photo(content);
         else if (content[content.length - 1].equals("gif")) gif(content);

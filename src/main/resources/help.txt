@@ -17,7 +17,7 @@ Displays content from a random post in specified subreddit
 >comment [subreddit name] 
  Displays newest comment from that subreddit
 
- >search [search terms]
+>search [search terms]
  Returns a list of subreddits based on the search terms 
 
 --------------------  Music ----------------------
