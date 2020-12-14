@@ -1,5 +1,16 @@
 ```css
--------------------- Games -----------------------
+--------------------  Reddit [***NOW WITH SPECIFIERS***] ---------------------
+
+>post [subreddit name] [sort specifier [time period]]
+Displays content from a random post in specified subreddit 
+
+>comment [subreddit name]
+ Displays newest comment from that subreddit
+
+>search [search terms]
+ Returns a list of subreddits based on the search terms
+
+ -------------------- Games -----------------------
 >game 
  Starts a game where you have to guess the location (city, state, country, etc.) of the photo. The text channel has 10 tries
 
@@ -8,24 +19,6 @@
 
 >quit
  Stops the game and reveals the answer
-
---------------------  Reddit ---------------------
-
->post [subreddit name]
-Displays content from a random post in specified subreddit 
-
->comment [subreddit name] 
- Displays newest comment from that subreddit
-
->search [search terms]
- Returns a list of subreddits based on the search terms 
-
---------------------  Music ----------------------
->play [Youtube video name]
- Play a song from Youtube
-
->skip
- Stop the currently playing song.
 
 --------------------  Miscellaneous --------------
 >joke 

@@ -24,6 +24,8 @@ public class Reddit
     private NetworkAdapter adapter;
     private RedditClient reddit;
 
+    private final int DISCORD_CHAR_LIMIT = 2000;
+
     public Reddit()
     {
         userAgent = new UserAgent("desktop", "net.dean.awesomescript", "v0.1", "APM369");
@@ -32,11 +34,66 @@ public class Reddit
         reddit = OAuthHelper.automatic(adapter, credentials);
     }
 
-    public String[] getPost(String subredditName) throws SubredditDoesNotExistException
+    public String[] getPost(String subredditName) throws Exception
     {
-        try 
+        String[] args = subredditName.split(" ", 2);
+        DefaultPaginator<Submission> posts;
+        if (args.length == 1) posts = reddit.subreddit(subredditName).posts().build();
+        else
         {
-            DefaultPaginator<Submission> posts = reddit.subreddit(subredditName).posts().build();
+            String[] specifier_args = args[1].split(" ", 2);
+            SubredditSort sorter;
+            switch (specifier_args[0].toLowerCase()) 
+            {
+                case "top":
+                    sorter = SubredditSort.TOP;
+                    break;
+                case "best":
+                    sorter = SubredditSort.BEST;
+                    break;
+                case "new":
+                    sorter = SubredditSort.NEW;
+                    break;
+                case "controversial":
+                    sorter = SubredditSort.CONTROVERSIAL;
+                    break;
+                case "rising":
+                    sorter = SubredditSort.RISING;
+                    break;
+                default:
+                    sorter = SubredditSort.HOT;
+                }
+
+            if (sorter.getRequiresTimePeriod()) 
+            {
+                TimePeriod period;
+                switch (specifier_args[1].toLowerCase())
+                {
+                    case "all":
+                        period = TimePeriod.ALL;
+                        break;
+                    case "day":
+                        period = TimePeriod.DAY;
+                        break;
+                    case "hour":
+                        period = TimePeriod.HOUR;
+                        break;
+                    case "month":
+                        period = TimePeriod.MONTH;
+                        break;
+                    case "year":
+                        period = TimePeriod.YEAR;
+                        break;
+                    default:
+                        period = TimePeriod.WEEK;
+                }
+
+                posts = reddit.subreddit(args[0]).posts().sorting(sorter).timePeriod(period).build();
+            }
+            
+            else posts = reddit.subreddit(args[0]).posts().sorting(sorter).build();
+        }
+        
             List<String[]> content = new ArrayList<>();
             Listing<Submission> list_of_posts = posts.next();
 
@@ -57,18 +114,20 @@ public class Reddit
                     }
                 }
 
-                else content.add(new String[] {"**" + s.getTitle() + "**" + "\n\n" + s.getSelfText(), "text"});
+                else 
+                {
+                    String title = s.getTitle();
+                    String text = s.getSelfText();
+                    // -18 because of asterisks and newline characters between title and text and "continued" message
+                    if (text.length() + title.length() > DISCORD_CHAR_LIMIT) text = text.substring(0, DISCORD_CHAR_LIMIT - title.length() - 18)
+                    + "\n(continued)"; 
+                    content.add(new String[] {"**" + title + "**\n\n" + text, "text"});
+                }
             }
 
             if (content.size() == 0) return null;
             int random_number = (int) (content.size()*Math.random());
             return content.get(random_number);
-        }
-
-        catch (Exception e)
-        {
-            throw new SubredditDoesNotExistException();
-        }
     }
 
     public String getComment(String subredditName) throws SubredditDoesNotExistException

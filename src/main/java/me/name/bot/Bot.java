@@ -42,7 +42,7 @@ public class Bot extends ListenerAdapter
         try 
         {
             if (!isJDASet) {
-                error_channel = event.getJDA().getTextChannelById("663249547765743636");
+                error_channel = event.getJDA().getTextChannelById("788047889770217504");
                 isJDASet = true;
             }
             if (event.getAuthor().isBot()) return; // don't respond to bots (including self)
@@ -58,7 +58,7 @@ public class Bot extends ListenerAdapter
 
         catch (SubredditDoesNotExistException e)
         {      
-            String[] error_messages = {"wnfnufnwrugrw SPELL CORRECTLY sdftgdsg", "spelling isn't that hard", "learn the art of spelling"};
+            String[] error_messages = {"Horrible spelling.", "Awful spelling.", "Unsatisfactory spelling."};
             int random_number = (int) (Math.random()*error_messages.length);
             channel.sendMessage(event.getAuthor().getAsMention() + " " + error_messages[random_number]).queue(); 
         }

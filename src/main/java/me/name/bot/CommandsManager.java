@@ -330,8 +330,4 @@ public class CommandsManager {
         else channel.sendMessage(content[0]).queue(); // self-post
         statRecorder.incrementCount(command.replace(">",""));
     }
-
-    private void copyPasta() {
-        
-    }
 }
