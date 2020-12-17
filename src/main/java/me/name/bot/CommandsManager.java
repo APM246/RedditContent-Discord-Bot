@@ -44,23 +44,27 @@ public class CommandsManager {
 
     public void memeify(String message, MessageChannel channel) 
     {
-        String modified = "";
-        String letter;
-        for (int i = 0; i < message.length(); i++) {
-            if (i % 2 == 0) letter = message.substring(i, i+1).toUpperCase();
-            else letter = message.substring(i, i+1);
-
-            modified += letter;
-        }
-
+        String modified = message.replace("l", "w").replace("r", "w");
         channel.sendMessage(modified).queue();
     }
 
     public boolean shouldMeme(String message) 
     {
         if (message.contains("https") || message.charAt(0) == '-') return false;
-        else if (random.nextInt(100) < 10) return true;
-        else return false;
+        else
+        {
+            double count = 0;
+            for (int i = 0; i < message.length(); i++)
+            {
+                if (message.charAt(i) == 'l' || message.charAt(i) == 'r') count++;
+            }
+            
+            int num_message_chars = message.replace(" ", "").length();
+
+            if (count/num_message_chars >= 0.15 && random.nextInt(100) < 5) return true;
+            else if (count/num_message_chars > 0.3) return true;
+            else return false;
+        }
     }
 
 
