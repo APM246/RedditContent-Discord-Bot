@@ -2,6 +2,8 @@ package me.name.bot;
 
 import me.name.Reader;
 import me.name.NewsUpdates;
+import me.name.exceptions.InvalidPeriodException;
+import me.name.exceptions.InvalidSorterException;
 import me.name.exceptions.SubredditDoesNotExistException;
 import me.name.music.Music;
 import net.dv8tion.jda.api.entities.Activity;
@@ -61,6 +63,18 @@ public class Bot extends ListenerAdapter
             String[] error_messages = {"Horrible spelling.", "Awful spelling.", "Unsatisfactory spelling."};
             int random_number = (int) (Math.random()*error_messages.length);
             channel.sendMessage(event.getAuthor().getAsMention() + " " + error_messages[random_number]).queue(); 
+        }
+
+        catch (InvalidSorterException e) 
+        {
+            channel.sendMessage("You did not provide a valid sorter. The available options are top, best, new," +
+            " controversial, rising and hot (default).").queue();
+        }
+
+        catch (InvalidPeriodException e)
+        {
+            channel.sendMessage("You did not provide a valid time period. The available options are all, day, hour," +
+             " month, year and week").queue();
         }
 
         catch (Exception e)

@@ -1,5 +1,7 @@
 package me.name;
 
+import me.name.exceptions.InvalidPeriodException;
+import me.name.exceptions.InvalidSorterException;
 import me.name.exceptions.SubredditDoesNotExistException;
 import net.dean.jraw.*;
 import net.dean.jraw.http.NetworkAdapter;
@@ -60,13 +62,17 @@ public class Reddit
                 case "rising":
                     sorter = SubredditSort.RISING;
                     break;
-                default:
+                case "hot":
                     sorter = SubredditSort.HOT;
+                    break;
+                default:
+                    throw new InvalidSorterException();
                 }
 
             if (sorter.getRequiresTimePeriod()) 
             {
                 TimePeriod period;
+                if (specifier_args.length == 1) throw new InvalidPeriodException();
                 switch (specifier_args[1].toLowerCase())
                 {
                     case "all":
@@ -84,8 +90,11 @@ public class Reddit
                     case "year":
                         period = TimePeriod.YEAR;
                         break;
-                    default:
+                    case "week":
                         period = TimePeriod.WEEK;
+                        break;
+                    default:
+                        throw new InvalidPeriodException();
                 }
 
                 posts = reddit.subreddit(args[0]).posts().sorting(sorter).timePeriod(period).build();
