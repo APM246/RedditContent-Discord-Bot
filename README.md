@@ -11,6 +11,7 @@ Meta Commands:
 - \>about
 = \>update
 - \>stat \[command]
+- \>purge
 
 Reddit Commands:
 
@@ -34,5 +35,5 @@ Misc:
 More commands planned
 
 ## Hosting
-The bot is currently being hosted on a free Amazon Web Service EC2 Ubuntu-16.04 instance.
+The bot is currently being hosted on an AWS EC2 Ubuntu-16.04 instance.
 
