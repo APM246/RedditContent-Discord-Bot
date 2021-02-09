@@ -28,6 +28,9 @@ Displays content from a random post in specified subreddit
  Gets latest news headline from New York Times 
 
 --------------------  Meta -----------------------
+>purge
+Removes last message sent by bot
+
 >stat [command]
  Displays number of times a command has been requested
 

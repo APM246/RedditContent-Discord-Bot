@@ -10,10 +10,15 @@ import me.name.NewsUpdates;
 import me.name.Reddit;
 import me.name.music.Music;
 import net.dv8tion.jda.api.entities.EmbedType;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.MessageEmbed.ImageInfo;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.requests.RestAction;
+
+import java.util.List;
 import java.util.Random;
 
 public class CommandsManager {
@@ -31,6 +36,12 @@ public class CommandsManager {
     private String[] output; 
     private int n_tries;
     private static String[] banned_list;
+
+    private final String special_message = 
+                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?" + 
+                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?" + 
+                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?" + 
+                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?";
 
     public CommandsManager(Reddit reddit, NewsUpdates newsUpdates, Music musicBot) throws Exception 
     {
@@ -140,6 +151,8 @@ public class CommandsManager {
         else if (command.equals(">stop")) stop(event);
 
         else if (command.equals(">skip")) skip(event);
+
+        else if (command.equals(">purge")) purgeMessage();
     }
 
     private void game() throws Exception {
@@ -248,16 +261,7 @@ public class CommandsManager {
     }
 
     private void photo(String[] photo_properties) throws Exception {
-        if (isInappropriate(args))
-            {
-                String special_message = 
-                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?" + 
-                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?" + 
-                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?" + 
-                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?";
-                channel.sendMessage(special_message).queue();
-            }
-
+        if (isInappropriate(args)) channel.sendMessage(special_message).queue();
         else 
         {
             statRecorder.incrementCount(command.replace(">",""));
@@ -275,16 +279,7 @@ public class CommandsManager {
     }
 
     private void gif(String[] gif_properties) throws Exception {
-        if (isInappropriate(args))
-        {
-            String special_message = 
-                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?" + 
-                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?" + 
-                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?" + 
-                        "WHEN? WHEN? WHEN? WHEN? WHEN? WHEN? WHEN?";
-            channel.sendMessage(special_message).queue();
-        }   
-                    
+        if (isInappropriate(args)) channel.sendMessage(special_message).queue();
         else 
         {
             statRecorder.incrementCount(command.replace(">",""));
@@ -333,5 +328,29 @@ public class CommandsManager {
         else if (content[content.length - 1].equals("gif")) gif(content);
         else channel.sendMessage(content[0]).queue(); // self-post
         statRecorder.incrementCount(command.replace(">",""));
+    }
+
+    private void purgeMessage()
+    {
+        if (channel.hasLatestMessage())
+        {
+            MessageHistory message_history = channel.getHistory();
+            int NUM_PAST_MESSAGES = 100;
+            RestAction<List<Message>> rest_action_message_list = message_history.retrievePast(NUM_PAST_MESSAGES);
+            List<Message> message_list = rest_action_message_list.complete();
+            
+            // find most recent message from bot
+            int i = 0;
+            while (!message_list.get(i).getAuthor().isBot()) i++;
+
+            Message relevant_message = message_list.get(i);
+            if (relevant_message.getAuthor().isBot()) channel.purgeMessages(relevant_message);
+            else channel.sendMessage("Last message was not sent by bot").queue();
+        }
+        
+        else
+        {
+            channel.sendMessage("An error occurred.").queue();
+        }
     }
 }
