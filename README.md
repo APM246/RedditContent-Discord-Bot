@@ -1,7 +1,5 @@
 [![](https://img.shields.io/badge/Gradle-6.0.1-brightgreen)](https://gradle.org/) [![](https://img.shields.io/badge/JRAW-v1.1.0-red)](https://github.com/mattbdean/JRAW) [![](https://img.shields.io/badge/JDA-4.1.1__101-blue)](https://github.com/DV8FromTheWorld/JDA)
 
-![](https://i.imgur.com/ZGHw0G2.png)
-
 # APM-Discord-Bot
 A Discord bot that displays Reddit content, plays music, reports latest news and more. 
 
