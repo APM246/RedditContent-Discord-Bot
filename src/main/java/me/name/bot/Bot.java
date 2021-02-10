@@ -33,7 +33,7 @@ public class Bot extends ListenerAdapter
     public static void main(String[] args) throws Exception
     {
         JDABuilder.createLight(Reader.retrieveBotToken(), GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS).
-        addEventListeners(new Bot()).setActivity(Activity.playing("type >help")).build();       
+        addEventListeners(new Bot()).setActivity(Activity.playing("type >help")).build();      
     }
 
     @Override

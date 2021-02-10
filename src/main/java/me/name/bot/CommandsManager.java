@@ -341,16 +341,18 @@ public class CommandsManager {
             
             // find most recent message from bot
             int i = 0;
-            while (!message_list.get(i).getAuthor().isBot()) i++;
+            long bot_id = 652564244067385345L;
+            while (i < 100 && message_list.get(i).getAuthor().getIdLong() != bot_id) i++;
 
-            Message relevant_message = message_list.get(i);
-            if (relevant_message.getAuthor().isBot()) channel.purgeMessages(relevant_message);
-            else channel.sendMessage("Last message was not sent by bot").queue();
+            if (i == 100) channel.sendMessage("Could not find any messages to purge").queue();
+            else 
+            {
+                Message relevant_message = message_list.get(i);
+                channel.purgeMessages(relevant_message);
+            }
         }
         
-        else
-        {
-            channel.sendMessage("An error occurred.").queue();
-        }
+        else channel.sendMessage("An error occurred in retrieving the text channel's message history.").queue();
+        
     }
 }
