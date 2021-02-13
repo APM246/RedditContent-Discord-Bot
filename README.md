@@ -3,7 +3,7 @@
 # APM-Discord-Bot
 A Discord bot that displays Reddit content, plays music, reports latest news and more. 
 
-![Alt text](https://im7.ezgif.com/tmp/ezgif-7-4ec804973b9f.gif)
+![Alt text](https://i.imgur.com/PdSAgUD.gif)
 
 Meta Commands: 
 
