@@ -9,7 +9,7 @@ Meta Commands:
 
 - \>help
 - \>about
-= \>update
+- \>update
 - \>stat \[command]
 - \>purge
 
